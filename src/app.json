@@ -1,0 +1,43 @@
+{
+  "pages": [
+    "pages/index/main",
+    "pages/logs/main",
+    "pages/me/main",
+    "pages/q-and-a/main",
+    "pages/wechat-official-account/main"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "FzuVote",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#999",
+    "backgroundColor": "#fafafa",
+    "selectedColor": "#333",
+    "borderStyle": "white",
+    "list": [
+      {
+        "text": "广场",
+        "pagePath": "pages/index/main",
+        "iconPath": "static/tabs/icon_circle_line.png",
+        "selectedIconPath": "static/tabs/icon_circle_line1.png"
+      },
+      {
+        "text": "发起投票",
+        "pagePath": "pages/logs/main",
+        "iconPath": "static/tabs/icon_discovery.png",
+        "selectedIconPath": "static/tabs/icon_discovery1.png"
+      },
+      {
+        "text": "我的",
+        "pagePath": "pages/me/main",
+        "iconPath": "static/tabs/icon_patriarch.png",
+        "selectedIconPath": "static/tabs/icon_patriarch1.png"
+      }
+    ],
+    "position": "bottom"
+  },
+  "sitemapLocation": "sitemap.json"
+}
