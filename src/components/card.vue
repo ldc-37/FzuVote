@@ -1,20 +1,21 @@
 <template>
   <div id="card">
     <div class="body">
-      <img :src="infoData.imgSrc" class="main-pic">
-      <div class="creator">{{infoData.creator}}</div>
+      <img :src="imgSrc" class="main-pic">
+      <img src="/static/images/shape1.png" class="creator-bg">
+      <div class="creator">{{creator}}</div>
     </div>
     <div class="bottom">
-      <div class="title">{{infoData.title}}</div>
+      <div class="title">{{title}}</div>
       <div class="number">
         <!-- <img src=""> -->
-        <span class="data">{{infoData.joinNum}}</span>人已参与，
-        已投<span class="data">{{infoData.voteNum}}</span>票
+        <span class="data">{{joinNum}}</span>人已参与，
+        已投<span class="data">{{voteNum}}</span>票
       </div>
       <div class="end-time">
-        {{infoData.endTimeStr}}2019-05-09 11:11 结束
+        {{endTimeStr}}2019-05-09 11:11 结束
       </div>
-      <div class="user-state" v-show="infoData.userState === 1">
+      <div class="user-state" v-show="userState === 1">
         <img src="/static/images/icon_task_done.png" class="joined-img">
         <span class="joined-text">已参与</span>
       </div>
@@ -28,7 +29,7 @@ export default {
   props: ['infoData'],
   data() {
     return {
-      ...infoData,
+      ...this.infoData,
 
     }
   },
@@ -69,11 +70,18 @@ export default {
   position: absolute;
   right: -15rpx;
   top: 40rpx;
-  padding: 7rpx 30rpx 7rpx 40rpx;
-  background: #0086F1;
+  padding: 0 30rpx 0 40rpx;
+  line-height: 45rpx;
   color: #fff;
   font-size: 12px;
-  border-radius: 50px 0 0 50px;
+}
+
+.creator-bg {
+  position: absolute;
+  right: -15rpx;
+  top: 40rpx;
+  width: 170rpx;
+  height: 45rpx;
 }
 
 .title {

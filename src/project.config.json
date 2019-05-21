@@ -12,8 +12,8 @@
 		"autoAudits": false
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.6.6",
-	"appid": "wx7d2db80ecead2492",
+	"libVersion": "2.0.0",
+	"appid": "wx9a26b7cb889a4e16",
 	"projectname": "FzuVote",
 	"debugOptions": {
 		"hidedInDevtools": []

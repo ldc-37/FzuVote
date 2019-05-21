@@ -1,9 +1,11 @@
 {
   "pages": [
     "pages/index/main",
+    "pages/launch/main",
     "pages/logs/main",
     "pages/me/main",
     "pages/q-and-a/main",
+    "pages/launch-questionnaire/main",
     "pages/wechat-official-account/main"
   ],
   "window": {
@@ -26,7 +28,7 @@
       },
       {
         "text": "发起投票",
-        "pagePath": "pages/logs/main",
+        "pagePath": "pages/launch/main",
         "iconPath": "static/tabs/icon_discovery.png",
         "selectedIconPath": "static/tabs/icon_discovery1.png"
       },
