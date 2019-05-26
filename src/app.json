@@ -6,6 +6,15 @@
     "pages/me/main",
     "pages/q-and-a/main",
     "pages/launch-questionnaire/main",
+    "pages/launch-image-text/main",
+    "pages/launch-selection/main",
+    "pages/vote-history/main",
+    "pages/search/main",
+    "pages/do-questionnaire/main",
+    "pages/do-image-text/main",
+    "pages/do-selection/main",
+    "pages/questionnaire-result/main",
+    "pages/join-selection/main",
     "pages/wechat-official-account/main"
   ],
   "window": {

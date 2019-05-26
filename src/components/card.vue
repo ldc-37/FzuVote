@@ -1,5 +1,5 @@
 <template>
-  <div id="card">
+  <div class="card" @click="navToVote">
     <div class="body">
       <img :src="imgSrc" class="main-pic">
       <img src="/static/images/shape1.png" class="creator-bg">
@@ -13,9 +13,9 @@
         已投<span class="data">{{voteNum}}</span>票
       </div>
       <div class="end-time">
-        {{endTimeStr}}2019-05-09 11:11 结束
+        {{endTime}} 结束
       </div>
-      <div class="user-state" v-show="userState === 1">
+      <div class="user-state" v-if="userState === 1">
         <img src="/static/images/icon_task_done.png" class="joined-img">
         <span class="joined-text">已参与</span>
       </div>
@@ -25,36 +25,55 @@
 
 <script>
 export default {
-  // title, imgSrc, creator, joinNum, voteNum, endTime, userState,
   props: ['infoData'],
   data() {
     return {
       ...this.infoData,
+    }
+  },
 
+  methods: {
+    navToVote() {
+      let url
+      switch (this.type) {
+        case 'Election':
+          url = '/pages/do-selection/main'
+          break
+        case 'Questionnaire':
+          url = '/pages/do-questionnaire/main'
+          break
+        case 'Picvote':
+          url = '/pages/do-image-text/main'
+          break
+        default:
+          throw new Error('ERROR type: ' + this.type)
+      }
+      wx.navigateTo({
+        url: url + '?id=' + this.id
+      })
     }
   },
 }
 </script>
 
 <style scoped>
-#card {
+.card {
   position: relative;
   width: 650rpx;
   margin: 50rpx;
-  border-radius: 15px;
+  border-radius: 10px;
   box-shadow: 0 0 72rpx 5rpx rgba(0, 0, 0, 0.1);
 }
 
 .body {
   height: 130px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .main-pic {
   height: 100%;
   width: 100%;
-  overflow: hidden;
-  border-radius: 15px 15px 0 0;
+  border-radius: 10px 10px 0 0;
 }
 
 
@@ -63,7 +82,7 @@ export default {
   padding: 25rpx 40rpx;
   border-top: none;
   font-size: 14px;
-  border-radius: 0 0 5px 5px;
+  /* border-radius: 0 0 5px 5px; */
 }
 
 .creator {
@@ -85,8 +104,9 @@ export default {
 }
 
 .title {
-  color: #0086F1;
-  font-size: 18px;
+  /* color: #0086F1; */
+  color: #0387F1;
+  font-size: 16px;
   margin-bottom: 20rpx;
 }
 
@@ -106,7 +126,7 @@ export default {
   display: flex;
   align-items: center;
   bottom: 20rpx;
-  right: 50rpx;
+  right: 40rpx;
   color: #0086F1;
 }
 

@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- <div class="one-part" @click="navTo('../launch-questionnaire/main')"> -->
-    <a class="one-part" href='../launch-questionnaire/main'>
+    <a class="one-part" href='../launch-image-text/main'>
       <div class="part-text">
         <div class="part-title">图文模式</div>
         <div class="part-desc">
@@ -14,20 +14,20 @@
         <img src="/static/images/icon_list.png" class="icon-img">
       </div>
     </a>
-    <div class="one-part one-part-center">
+    <a class="one-part one-part-center" href='../launch-questionnaire/main'>
       <div class="part-text">
         <div class="part-title">问卷模式</div>
         <div class="part-desc">
           <ul>
-            <li>图文并茂，直观明朗</li>
+            <li>调研神器，效率翻倍</li>
           </ul>
         </div>
       </div>
       <div class="part-icon">
         <img src="/static/images/icon_compile.png" class="icon-img">
       </div>
-    </div>
-    <div class="one-part">
+    </a>
+    <a class="one-part" href='../launch-selection/main'>
       <div class="part-text">
         <div class="part-title">评选模式</div>
         <div class="part-desc">
@@ -43,7 +43,7 @@
       <div class="part-icon part-icon-last">
         <img src="/static/images/icon_star.png" class="icon-img">
       </div>
-    </div>
+    </a>
   </div>
 </template>
 

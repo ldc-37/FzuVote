@@ -7,17 +7,17 @@
     </div>
     <div class="l-body">
       <div class="option-line" v-for="(item, index) in answers" :key="index">
-        <img src="/static/images/icon_minus.png" class="minus-option icon-img" @click="minusOption" :data-idx="index">
-        <input type="text" class="option-text" placeholder="选项内容" v-model="answers[index]" @change="handleChange">
+        <img src="/static/images/icon_minus.png" class="minus-option icon-40" @click="minusOption" :data-idx="index">
+        <input type="text" class="option-input" placeholder="选项内容" v-model="answers[index]" @change="handleChange">
       </div>
     </div>
     <div class="l-footer">
       <div class="add-option" @click="addOption">
-        <img src="/static/images/icon_add2.png" class="add-option-icon icon-img">
+        <img src="/static/images/icon_add2.png" class="add-option-icon icon-40">
         <span class="add-span">添加选项</span>
       </div>
       <div class="delete-question" @click="deleteQuestion">
-        <img src="/static/images/icon_delete.png" class="icon-img">
+        <img src="/static/images/icon_delete.png" class="icon-40">
         <span class="delete-span">删除</span>
       </div>
     </div>
@@ -38,6 +38,7 @@ export default {
       imgUrl: '',
     }
   },
+
   mounted() {
     console.log({
         ...this.$data,
@@ -67,7 +68,7 @@ export default {
       console.log(this.answers[e.target.dataset.idx]);
       if (this.answers.length > 2) {
         this.answers.splice(e.target.dataset.idx, 1)
-        this.$forceUpdate();
+        // this.$forceUpdate();
       }
       else {
         wx.showToast({
@@ -81,11 +82,14 @@ export default {
         title: '警告',
         content: '确认删除？',
         confirmText: '删除',
-        confirmColor: '#F56C6C'
-
-      })
-      this.$emit('delete', {
-        order: this.order
+        confirmColor: '#F56C6C',
+        success(result) {
+          if (result.confirm) {
+            this.$emit('delete', {
+              order: this.order
+            })
+          }
+        }
       })
     }
   },
@@ -96,7 +100,7 @@ export default {
 .choose-question {
   margin-bottom: 40rpx;
   padding: 0 50rpx;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .l-header {
@@ -111,8 +115,9 @@ export default {
 }
 
 .question {
-  border-bottom: 1px solid #999;
+  padding-left: 10rpx;
   width: 400rpx;
+  border-bottom: 1px solid #999;
 }
 
 .upload-btn {
@@ -129,16 +134,11 @@ export default {
 .option-line {
   display: flex;
   align-items: center;
-  height: 80rpx;
+  height: 85rpx;
 }
 
 .minus-option {
   margin: 0 30rpx;
-}
-
-.icon-img {
-  width: 40rpx;
-  height: 40rpx;
 }
 
 .l-footer {

@@ -33,20 +33,50 @@ export default {
 </script>
 
 <style>
-/* .container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 200rpx 0;
-  box-sizing: border-box;
+.btn {
+  width: 380rpx;
+  background: #0086F1;
+  color: #fff;
+  font-size: 16px;
+  border-radius: 50px;
+  line-height: 2.4;
+  box-shadow: 0 0 72rpx 5rpx rgba(0, 0, 0, 0.1);
 }
-this rule will be remove
-* {
-  transition: width 2s;
-  -moz-transition: width 2s;
-  -webkit-transition: width 2s;
-  -o-transition: width 2s;
-} */
+
+.huge-text {
+  font-size: 18px;
+}
+.large-text {
+  font-size: 16px;
+}
+.mid-text {
+  font-size: 14px;
+}
+.small-text {
+  font-size: 12px;
+}
+
+.icon-25 {
+  width: 25rpx;
+  height: 25rpx;
+}
+.icon-30 {
+  width: 30rpx;
+  height: 30rpx;
+}
+.icon-40 {
+  width: 40rpx;
+  height: 40rpx;
+}
+.icon-50 {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.font-gray {
+  color: #9999A3;
+}
+.font-black {
+  color: #414141;
+}
 </style>

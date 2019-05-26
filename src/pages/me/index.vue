@@ -13,22 +13,22 @@
       </div>
     </div>
     <div class="l-body">
-      <div class="personal-numbers">
+      <div @click="navTo('../vote-history/main')" class="personal-numbers">
         <div class="number-group">
           <span class="number">{{ userData.voteNum }}</span>
           <span class="number-desc">参与投票</span>
         </div>
-        <div class="number-group">
+        <div @click="navTo('../vote-history/main')" class="number-group">
           <span class="number">{{ userData.launchNum }}</span>
           <span class="number-desc">发起投票</span>
         </div>
-        <div class="number-group">
+        <div @click="navTo('../vote-history/main')" class="number-group">
           <span class="number">{{ userData.prizeNum }}</span>
           <span class="number-desc">中奖记录</span>
         </div>
       </div>
       <div class="columns">
-        <a class="one-column">
+        <a href="../vote-history/main" class="one-column">
           <span class="column-text">我的足迹</span>
           <img class="column-img" src="/static/images/icon_right.png"></img>
         </a>
@@ -36,10 +36,10 @@
           <span class="column-text">常见问题</span>
           <img class="column-img" src="/static/images/icon_right.png"></img>
         </a>
-        <a class="one-column">
-          <span class="column-text">联系客服</span>
+        <button plain open-type="feedback" class="one-column feedback">
+          <span class="column-text">意见反馈</span>
           <img class="column-img" src="/static/images/icon_right.png"></img>
-        </a>
+        </button>
         <a href="../wechat-official-account/main" class="one-column">
           <span class="column-text">关注公众号</span>
           <img class="column-img" src="/static/images/icon_right.png"></img>
@@ -59,6 +59,13 @@ export default {
         launchNum: 12,
         prizeNum: 1
       }
+    }
+  },
+  methods: {
+    navTo(url) {
+      wx.navigateTo({
+        url
+      })
     }
   },
 }
@@ -148,7 +155,7 @@ export default {
 
 .number-desc {
   font-size: 12px;
-  color: #9999a3;
+  color: #9999A3;
 }
 
 /* 功能栏 */
@@ -162,7 +169,7 @@ export default {
   align-items: center;
   position: relative;
   line-height: 3;
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .column-img {
@@ -171,6 +178,13 @@ export default {
   height: 30rpx;
   transform: scale(1.2);
   right: 5rpx;
+}
+
+.feedback {
+  border: none;
+  padding: 0;
+  font-size: 16px;
+  color: #000;
 }
 
 </style>

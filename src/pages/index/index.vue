@@ -1,116 +1,261 @@
 <template>
-  <div @click="clickHandle">
+  <div class="ground">
+    <div class="l-header">
+      <swiper
+        autoplay="true"
+        indicator-dots="true"
+        indicator-color="#FFF"
+        indicator-active-color="#0086F1"
+        :current="swiperState"
+        @change="swiperState = $event.mp.detail.current"
+      >
+        <swiper-item v-for="(item, index) in swiperImage" :key="index">
+          <img :src="item.src" class="swiper-img">
+        </swiper-item>
+      </swiper>
+    </div>
+    <div class="l-body">
+      <div class="top-bar">
+        <div class="top-bar-item"
+          :class="{'top-bar-item--act': tabState === 0}" @click="changeTab(0)"
+          hover-class="gray-bg"
+        >
+          <img src="/static/images/icon-new.png" class="top-bar-icon icon-40">
+          <span class="top-bar-text">最新投票</span>
+        </div>
+        <div class="top-bar-item"
+          :class="{'top-bar-item--act': tabState === 1}" @click="changeTab(1)"
+          hover-class="gray-bg"
+        >
+          <img src="/static/images/icon-hot.png" class="top-bar-icon icon-30">
+          <span class="top-bar-text">热门投票</span>
+        </div>
+        <img src="/static/images/icon_search.png" class="search-icon" @click="navToSearch">
+      </div>
+      <div class="card-list">
+        <card
+          :infoData="vote"
+          v-for="(vote, index) in votes"
+          :key="index"
 
-        <card :infoData="infoData"></card>
-        <card :infoData="infoData"></card>
-        <!-- <question :order="1"></question> -->
+        ></card>
+      </div>
+    </div>
 
   </div>
 </template>
 
 <script>
 import card from '@/components/card'
-import question from '@/components/choose-question'
 import { mapState, mapMutations } from 'vuex'
 
 export default {
   data () {
     return {
-      infoData: {
-        title: '关于谁应该请吃饭的投票',
-        imgSrc: '/static/images/testbg.jpg',
-        creator: '西二在线',
-        joinNum: '23',
-        voteNum: '123',
-        endTime: '2.20 22:22',
-        userState: 1,
-      }
+      swiperImage: [
+        {
+        src: '/static/images/testswiper.png',
+        target: ''
+        },
+        {
+        src: '/static/images/testswiper.png',
+        target: ''
+        },
+        {
+        src: '/static/images/testswiper.png',
+        target: ''
+        },
+        {
+        src: '/static/images/testswiper.png',
+        target: ''
+        },
+        {
+        src: '/static/images/testswiper.png',
+        target: ''
+        },
+      ],
+      swiperState: 0,
+      tabState: 0,
+      votes: [
+        {
+          id: 321,
+          type: 'Election',
+          title: '关于谁应该请吃饭的投票',
+          imgSrc: '/static/images/testbg.jpg',
+          creator: '评选模式',
+          joinNum: '23',
+          voteNum: '123',
+          endTime: '2019-05-30 22:22',
+          userState: 1,
+        },
+        {
+          id: 311,
+          type: 'Questionnaire',
+          title: '关于谁应该请吃饭的投票',
+          imgSrc: '/static/images/testbg.jpg',
+          creator: '问卷模式',
+          joinNum: '23',
+          voteNum: '123',
+          endTime: '2019-05-30 22:22',
+          userState: 0,
+        },
+        {
+          id: 301,
+          type: 'Picvote',
+          title: '关于谁应该请吃饭的投票',
+          imgSrc: '/static/images/testbg.jpg',
+          creator: '图文模式',
+          joinNum: '23',
+          voteNum: '123',
+          endTime: '2019-05-30 22:22',
+          userState: 1,
+        },
+
+      ],
     }
   },
 
   components: {
     card,
-    question
   },
 
   computed: {
     ...mapState([
-      'openId'
+      'sessionId'
     ])
   },
 
   methods: {
     ...mapMutations([
-      'setOpenId',
+      'setSessionId',
     ]),
-    bindViewTap () {
-      const url = '../logs/main'
-      if (mpvuePlatform === 'wx') {
-        mpvue.switchTab({ url })
-      } else {
-        mpvue.navigateTo({ url })
-      }
+    navToSearch() {
+      wx.navigateTo({
+        url: '/pages/search/main'
+      })
     },
-    clickHandle (ev) {
-      console.log('clickHandle:', ev)
-      // throw {message: 'custom test'}
+    changeTab(state) {
+      this.tabState = state
+      wx.showLoading({
+        title: '加载中'
+      })
+      setTimeout(() => {
+        wx.hideLoading()
+      }, 500);
     }
   },
 
   mounted () {
-    // let app = getApp()
-    wx.navigateTo({
-      url: '/pages/launch-questionnaire/main'
-    })
 
+    // wx.navigateTo({
+    //   url: '/pages/join-selection/main'
+    // })
 
-    wx.login({
-      success: (res) => {
-        if (res.code) {
-          console.log('获取token成功：' + res.code)
-          this.$fly.post('/user/login?js_code=' + res.code).then(res_2 => {
-            if (res_2.Status === 200) {
-              this.setOpenId(res_2.SessionId)
-              wx.showToast({
-                title: '微信登陆成功',
-                image: '/static/images/icon_task_done.png',
-                duration: 2000
-              })
-            }
-            else {
-              console.error(res_2)
+    console.log(this.sessionId);
+
+    if (!this.sessionId)
+      wx.login({
+        success: (res) => {
+          if (res.code) {
+            console.log('获取token成功：' + res.code)
+            // @仅此处POST使用queryString方式
+            this.$fly.post('/user/login?js_code=' + res.code).then(res_2 => {
+              if (res_2.Status === 200) {
+                this.setSessionId(res_2.SessionId)
+                wx.showToast({
+                  title: '微信登陆成功',
+                  image: '/static/images/icon_task_done.png',
+                  duration: 2000
+                })
+              }
+              else {
+                console.error(res_2)
+                wx.showToast({
+                  title: '服务端登录失败',
+                  image: '/static/images/icon_task_done.png',
+                  duration: 3000
+                })
+              }
+            }).catch(err => {
+              console.log(err)
+              // TODO:图标更改
               wx.showToast({
                 title: '服务端登录失败',
                 image: '/static/images/icon_task_done.png',
                 duration: 3000
               })
-            }
-          }).catch(err => {
-            console.log(err)
+            })
+          }
+          else {
             // TODO:图标更改
             wx.showToast({
-              title: '服务端登录失败',
+              title: '微信登录失败',
               image: '/static/images/icon_task_done.png',
               duration: 3000
             })
-          })
+          }
         }
-        else {
-          // TODO:图标更改
-          wx.showToast({
-            title: '微信登录失败',
-            image: '/static/images/icon_task_done.png',
-            duration: 3000
-          })
-        }
-      }
-    })
+      })
+    else {
+      console.log('登录成功');
+
+    }
   }
 }
 </script>
 
 <style scoped>
+.l-header {
+  margin-bottom: 40rpx;
+  padding: 0 50rpx;
+}
+
+swiper {
+  height: 250rpx;
+}
+
+.swiper-img {
+  width: 100%;
+  height: 100%;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin: 0 50rpx;
+}
+
+.top-bar-item {
+  display: flex;
+  align-items: center;
+  padding: 10rpx;
+  margin-right: 30rpx;
+  border-bottom: 3px solid transparent;
+  font-size: 14px;
+}
+.top-bar-item--act {
+  border-bottom: 3px solid #0086F1;
+}
+
+.top-bar-icon {
+  margin-right: 10rpx;
+}
+
+.top-bar-text {
+  margin-right: 10rpx;
+}
+
+.search-icon {
+  position: absolute;
+  width: 50rpx;
+  height: 50rpx;
+  right: 0;
+}
 
 
+.gray-bg {
+  background: #f3f6f9;
+}
 
 </style>
