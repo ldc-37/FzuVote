@@ -1,7 +1,7 @@
 <template>
   <div class="launch-image-text">
     <div class="uploader">
-      <uploader limit="5"></uploader>
+      <uploader limit="5" @update="imagesId = $event"></uploader>
     </div>
 
     <div class="whole-info border-top-gray">
@@ -13,14 +13,14 @@
         <div class="one-team" v-for="(item, index) in teams" :key="index">
           <div class="one-line">
             <img src="/static/images/icon_minus.png" class="icon-40" @click="minusOption" :data-idx="index">
-            <p class="upload-tip-text" v-if="item.image === ''" @click="uploadImage(index)">上传图片</p>
+            <p class="upload-tip-text" v-if="!item.image" @click="uploadImage(index)">上传图片</p>
             <img :src="item.image" v-else class="team-img" @click="uploadImage(index)">
             <span class="order">{{index + 1}}）</span>
-            <input type="text" class="team-name-input" v-model="item.name" placeholder="队名">
+            <input type="text" class="team-name-input" v-model.lazy="item.name" placeholder="队名">
           </div>
           <div class="team-desc">
             <p class="attr-line">队伍简介</p>
-            <textarea v-model="item.desc" placeholder="请输入队伍简介"></textarea>
+            <textarea v-model.lazy="item.desc" placeholder="请输入队伍简介"></textarea>
           </div>
         </div>
       </div>
@@ -73,8 +73,8 @@
       </div>
     </div>
 
-    <div class="publish-btn">
-      <button class="btn" @click="publish">发布</button>
+    <div class="btn-launch">
+      <button class="btn" hover-class="btn-hover" :loading="btnLoading" @click="publish">发布</button>
     </div>
 
   </div>
@@ -90,10 +90,12 @@ export default {
     return {
       title: '',
       desc: '',
+      imagesId: [],
       teams: [
         {
           name: '',
           image: '',
+          imageId: '',
           desc: ''
         },
       ],
@@ -101,9 +103,11 @@ export default {
       setMulti: false,
       minOptionNum: 1,
       maxOptionNum: '不限',
-      signupTime: {},
+      voteTime: {},
       showInGround: true,
       anonymous: false,
+
+      btnLoading: false,
     }
   },
 
@@ -131,9 +135,58 @@ export default {
         sizeType: ['original', 'compressed'],
         sourceType: ['album', 'camera'],
         success: res => {
-          this.teams[index].image = res.tempFilePaths
+          this.teams[index].image = res.tempFilePaths[0]
+          wx.uploadFile({
+            url: this.$fly.config.baseURL + '/common/pic',
+            filePath: res.tempFilePaths[0],
+            name: 'file',
+            success: data => {
+              this.teams[index].imageId = JSON.parse(data.data).Pic_id
+            }
+          })
         }
       })
+    },
+    async publish() {
+      this.btnLoading = true
+      const Data = []
+      for (let item of this.teams) {
+        Data.push({
+          Pic: item.imageId,
+          Name: item.name,
+          Describe: item.desc,
+          Vote: "0"
+        })
+      }
+      const res = await this.$net.createImageText({
+        SessionId: this.$store.state.sessionId,
+        Title: this.title,
+        Describe: this.desc,
+        BeginTime: `${this.voteTime.startDate} ${this.voteTime.startTime}:00`,
+        EndTime: `${this.voteTime.endDate} ${this.voteTime.endTime}:00`,
+        IsPublic: +this.showInGround.toString(),
+        SharePic: this.imagesId,
+        MostVoteADay: this.maxVoteNum.toString(),
+        IsMultipleChoice: +this.setMulti.toString(),
+        LeastChoice: this.minOptionNum.toString(),
+        MostChoice: this.maxVoteNum.toString(),
+        Anonymity: +this.anonymous.toString(),
+        Data
+      })
+      if (res.Status === 200) {
+        this.btnLoading = false
+        wx.showToast({
+          title: '创建成功'
+        })
+        setTimeout(() => {
+          wx.redirectTo({
+            url: '/pages/do-image-text/main?id=' + res.Data.PicvoteId
+          })
+        }, 1000);
+      }
+      else {
+        throw new Error(res.Status)
+      }
     }
   },
 
@@ -231,15 +284,8 @@ switch {
   margin-left: 20rpx;
 }
 
-.btn {
-  width: 380rpx;
-  margin: 0 auto 60rpx;
-  background: #0086F1;
-  color: #fff;
-  font-size: 16px;
-  border-radius: 50px;
-  line-height: 2.4;
-  box-shadow: 0 0 72rpx 5rpx rgba(0, 0, 0, 0.1);
+.btn-launch {
+  margin-bottom: 60rpx;
 }
 
 

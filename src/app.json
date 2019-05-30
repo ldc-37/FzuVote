@@ -2,19 +2,18 @@
   "pages": [
     "pages/index/main",
     "pages/launch/main",
-    "pages/logs/main",
     "pages/me/main",
     "pages/q-and-a/main",
     "pages/launch-questionnaire/main",
     "pages/launch-image-text/main",
-    "pages/launch-selection/main",
+    "pages/launch-election/main",
     "pages/vote-history/main",
     "pages/search/main",
     "pages/do-questionnaire/main",
     "pages/do-image-text/main",
-    "pages/do-selection/main",
+    "pages/do-election/main",
     "pages/questionnaire-result/main",
-    "pages/join-selection/main",
+    "pages/join-election/main",
     "pages/wechat-official-account/main"
   ],
   "window": {

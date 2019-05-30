@@ -9,8 +9,12 @@
     </div>
 
     <div class="question-list border-top-gray">
-      <question :order="index + 1" @update="handleUpdate" @delete="handleDelete" v-for="(item, index) in qlist" :key="index"></question>
-      <button class="btn" @click="handleAdd">添加题目</button>
+      <question :voteData="item" :order="index + 1" @update="handleUpdate" @delete="handleDelete" @minus="handleMinus" v-for="(item, index) in qlist" :key="index"></question>
+      <div v-for="(item, index) in qlist" :key="index">
+        item: {{item.question}}
+        order: {{index + 1}}
+      </div>
+      <button class="btn btn-simple" @click="handleAdd">添加题目</button>
     </div>
 
     <div class="duration border-top-gray">
@@ -20,7 +24,7 @@
     <div class="other-settings">
       <div class="setting-line border-top-gray">
         <span class="setting-text">是否展示在广场</span>
-        <switch :checked="showInGround" color="#0086F1" class="show-switch" @change="handleChangeSetting"></switch>
+        <switch :checked="showInGround" color="#0086F1" class="show-switch" @change="showInGround = $event.mp.detail.value"></switch>
       </div>
     </div>
 
@@ -28,8 +32,8 @@
       <div class="preview">
         <a href="" class="preview-link">问卷预览</a>
       </div>
-      <div class="preview-btn">
-        <button class="btn" @click="launch">发布</button>
+      <div class="btn-launch">
+        <button class="btn" hover-class="btn-hover" @click="launch" :loading="btnLoading">发布</button>
       </div>
     </div>
 
@@ -45,23 +49,35 @@ import duration from '@/components/duration-setter'
 export default {
   data() {
     return {
-      order: 1,
       title: '',
       desc: '',
       qlist: [
         {
-          question: '',
+          // order: '1',
+          question: '1',
           answers: [
             '',
             '',
             ''
           ],
-          imgUrl: ''
+          imgUrl: '',
+        },
+        {
+          // order: '2',
+          question: '2',
+          answers: [
+            '',
+            '',
+            ''
+          ],
+          imgUrl: '',
         },
       ],
       voteTime: {},
 
-      showInGround: true
+      showInGround: true,
+
+      btnLoading: false,
     }
   },
 
@@ -74,26 +90,19 @@ export default {
 
   methods: {
     handleUpdate(e) {
-      console.log(this.qlist);
-      this.qlist[e.order - 1] = {
+      this.$set(this.qlist, e.order - 1, {
         order: e.order,
         question: e.question,
         answers: e.answers,
         imgUrl: e.imgUrl
-      }
-
+      })
     },
     handleDelete(e) {
-
+      console.log(e);
+      
       if (this.qlist.length > 1) {
-        // this.qlist.splice(e.order - 1, 1)
+        this.qlist.splice(e.order - 1, 1)
         // this.$forceUpdate()
-console.log(e);
-
-  console.log(this.qlist.filter(item => item.order !== e.order));
-        this.qlist = this.qlist.filter(item => item.order !== e.order)
-
-      console.log(this.qlist);
       }
       else {
         wx.showToast({
@@ -105,19 +114,23 @@ console.log(e);
     },
     handleAdd() {
       this.qlist.push({
-        question: '',
-        answers: [
-          '',
-          '',
-          ''
-        ],
-        imgUrl: ''
-      })
+          question: '',
+          answers: [
+            '',
+            '',
+            ''
+          ],
+          imgUrl: '',
+        })
     },
-    handleChangeSetting(e) {
-      this.showInGround = e.mp.detail.value
+    handleMinus(e) {
+      this.qlist[e.order - 1].answers.splice(e.index, 1)
     },
+    // handleChangeSetting(e) {
+    //   this.showInGround = e.mp.detail.value
+    // },
     launch() {
+      this.loading = true
       const Questionnaire = []
       for (let item of this.qlist) {
         Questionnaire.push({
@@ -134,18 +147,36 @@ console.log(e);
         Is_Public: this.showInGround ? '1' : '0',
         Questionnaire
       }
-      this.$fly.post('/questionnaire/new', JSON.stringify(data)).then(res => {
-        if (res.Status === 200) {
+
+
+      setTimeout(() => {
+        this.loading = false
           wx.showToast({
             title: '创建成功',
             image: '/static/images/icon_task_done.png',
             duration: 2000
           })
-          setTimeout(() => {
-            wx.navigateBack()
-          }, 1000)
-        }
-      })
+      }, 1000);
+      // this.$fly.post('/questionnaire/new', JSON.stringify(data)).then(res => {
+      //   if (res.Status === 200) {
+      //   this.loading = false
+      //     wx.showToast({
+      //       title: '创建成功',
+      //       image: '/static/images/icon_task_done.png',
+      //       duration: 2000
+      //     })
+      //     setTimeout(() => {
+      //       wx.navigateBack()
+      //     }, 1000)
+      //   }
+      // }).catch(() => {
+      //   wx.showToast({
+      //     title: '网络错误，请重试',
+      //     icon: 'none',
+      //     duration: 2000
+      //   })
+      //   this.loading = false
+      // })
     }
 
   },
@@ -174,21 +205,10 @@ console.log(e);
   padding: 40rpx 0;
 }
 
-.btn {
-  width: 380rpx;
-  margin: 40rpx auto;
-  background: #0086F1;
-  color: #fff;
-  font-size: 16px;
-  border-radius: 50px;
-  line-height: 2.4;
-  box-shadow: 0 0 72rpx 5rpx rgba(0, 0, 0, 0.1);
+.btn-launch {
+  margin: 40rpx 0;
 }
 
-/*  */
-.duration {
-
-}
 
 .setting-line {
   display: flex;

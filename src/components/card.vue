@@ -1,21 +1,20 @@
 <template>
   <div class="card" @click="navToVote">
     <div class="body">
-      <img :src="imgSrc" class="main-pic">
+      <img :src="infoData.imgSrc" class="main-pic">
       <img src="/static/images/shape1.png" class="creator-bg">
-      <div class="creator">{{creator}}</div>
+      <div class="creator">{{infoData.creator}}</div>
     </div>
     <div class="bottom">
-      <div class="title">{{title}}</div>
+      <div class="title">{{infoData.title}}</div>
       <div class="number">
-        <!-- <img src=""> -->
-        <span class="data">{{joinNum}}</span>人已参与，
-        已投<span class="data">{{voteNum}}</span>票
+        <span class="data">{{infoData.joinNum}}</span>人参与
+        <span v-if="infoData.type !== 'Questionnaire'">，已投<span class="data">{{infoData.voteNum}}</span>票</span>
       </div>
       <div class="end-time">
-        {{endTime}} 结束
+        {{infoData.endTime}} 结束
       </div>
-      <div class="user-state" v-if="userState === 1">
+      <div class="user-state" v-if="infoData.userState === 1">
         <img src="/static/images/icon_task_done.png" class="joined-img">
         <span class="joined-text">已参与</span>
       </div>
@@ -28,16 +27,17 @@ export default {
   props: ['infoData'],
   data() {
     return {
-      ...this.infoData,
+      // @切勿使用展开运算符，否则不再{{}}中不再是响应式的属性，无法同步props的变更
+      // ...this.infoData,
     }
   },
 
   methods: {
     navToVote() {
       let url
-      switch (this.type) {
+      switch (this.infoData.type) {
         case 'Election':
-          url = '/pages/do-selection/main'
+          url = '/pages/do-election/main'
           break
         case 'Questionnaire':
           url = '/pages/do-questionnaire/main'
@@ -48,11 +48,12 @@ export default {
         default:
           throw new Error('ERROR type: ' + this.type)
       }
+      url += '?id=' + this.infoData.id
       wx.navigateTo({
         url: url + '?id=' + this.id
       })
     }
-  },
+  }
 }
 </script>
 

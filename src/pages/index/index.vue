@@ -37,7 +37,6 @@
           :infoData="vote"
           v-for="(vote, index) in votes"
           :key="index"
-
         ></card>
       </div>
     </div>
@@ -54,23 +53,23 @@ export default {
     return {
       swiperImage: [
         {
-        src: '/static/images/testswiper.png',
+        src: '/static/images/testlove.png',
         target: ''
         },
         {
-        src: '/static/images/testswiper.png',
+        src: '/static/images/testsinger.png',
         target: ''
         },
         {
-        src: '/static/images/testswiper.png',
+        src: '/static/images/testphone.png',
         target: ''
         },
         {
-        src: '/static/images/testswiper.png',
+        src: '/static/images/testkh.png',
         target: ''
         },
         {
-        src: '/static/images/testswiper.png',
+        src: '/static/images/testpos.png',
         target: ''
         },
       ],
@@ -78,36 +77,36 @@ export default {
       tabState: 0,
       votes: [
         {
-          id: 321,
+          id: '123',
           type: 'Election',
-          title: '关于谁应该请吃饭的投票',
-          imgSrc: '/static/images/testbg.jpg',
+          title: '中国大学最具人气歌手评比',
+          imgSrc: '/static/images/testsinger.png',
           creator: '评选模式',
-          joinNum: '23',
-          voteNum: '123',
-          endTime: '2019-05-30 22:22',
+          joinNum: '466',
+          voteNum: '520',
+          endTime: '2019-05-31 22:11',
           userState: 1,
         },
         {
-          id: 311,
+          id: '456',
           type: 'Questionnaire',
-          title: '关于谁应该请吃饭的投票',
-          imgSrc: '/static/images/testbg.jpg',
+          title: '2019国产手机用户体验调查',
+          imgSrc: '/static/images/testphone.png',
           creator: '问卷模式',
-          joinNum: '23',
+          joinNum: '85',
           voteNum: '123',
-          endTime: '2019-05-30 22:22',
+          endTime: '2019-06-30 00:00',
           userState: 0,
         },
         {
-          id: 301,
+          id: '789',
           type: 'Picvote',
-          title: '关于谁应该请吃饭的投票',
-          imgSrc: '/static/images/testbg.jpg',
+          title: '你最喜欢的口红是哪一种？',
+          imgSrc: '/static/images/testkh.png',
           creator: '图文模式',
-          joinNum: '23',
-          voteNum: '123',
-          endTime: '2019-05-30 22:22',
+          joinNum: '1123',
+          voteNum: '1502',
+          endTime: '2019-06-05 12:22',
           userState: 1,
         },
 
@@ -134,25 +133,17 @@ export default {
         url: '/pages/search/main'
       })
     },
-    changeTab(state) {
+    async changeTab(state) {
       this.tabState = state
       wx.showLoading({
         title: '加载中'
       })
-      setTimeout(() => {
-        wx.hideLoading()
-      }, 500);
+      this.votes = state === 0 ? await this.$net.getLatest() : await this.$net.getHottest()
+      wx.hideLoading()
     }
   },
 
   mounted () {
-
-    // wx.navigateTo({
-    //   url: '/pages/join-selection/main'
-    // })
-
-    console.log(this.sessionId);
-
     if (!this.sessionId)
       wx.login({
         success: (res) => {

@@ -2,13 +2,13 @@
   <div class="choose-question">
     <div class="l-header">
       <span class="number">{{order < 10 ? '0' + order : order}}</span>
-      <input type="text" class="question" placeholder="请输入题目标题" v-model="question" @change="handleChange">
+      <input type="text" class="question" placeholder="请输入题目标题" v-model.lazy="copyData.question" @change="handleChange">
       <button class="upload-btn">上传图片</button>
     </div>
     <div class="l-body">
-      <div class="option-line" v-for="(item, index) in answers" :key="index">
+      <div class="option-line" v-for="(item, index) in copyData.answers" :key="index">
         <img src="/static/images/icon_minus.png" class="minus-option icon-40" @click="minusOption" :data-idx="index">
-        <input type="text" class="option-input" placeholder="选项内容" v-model="answers[index]" @change="handleChange">
+        <input type="text" class="option-input" placeholder="选项内容" v-model.lazy="copyData.answers[index]" @change="handleChange">
       </div>
     </div>
     <div class="l-footer">
@@ -26,49 +26,41 @@
 
 <script>
 export default {
-  props: ['order'],
+  // @关键在于创建props的双向绑定
+  props: ['voteData', 'order'],
   data() {
     return {
-      question: '',
-      answers: [
-        '',
-        '',
-        ''
-      ],
-      imgUrl: '',
+      copyData: this.voteData
     }
   },
-
-  mounted() {
-    console.log({
-        ...this.$data,
-        order: this.order
-      })
+  watch: {
+    voteData(val) {
+      this.copyData = val
+    }
   },
 
   methods: {
     handleChange(e) {
-      this.$emit('update', {
-        ...this.$data,
-        order: this.order
-      })
+      this.$emit('update', this.copyData)
     },
     addOption(e) {
-      if (this.answers.length >= 5) {
+      if (this.copyData.answers.length >= 5) {
         wx.showToast({
           title: '最多有5个选项',
           icon: 'none'
         })
       }
       else {
-        this.answers.push("")
+        this.copyData.answers.push("")
       }
     },
     minusOption(e) {
-      console.log(this.answers[e.target.dataset.idx]);
-      if (this.answers.length > 2) {
-        this.answers.splice(e.target.dataset.idx, 1)
-        // this.$forceUpdate();
+      if (this.copyData.answers.length > 2) {
+        // this.copyData.answers.splice(e.target.dataset.idx, 1)
+        this.$emit('minus', {
+          order: this.order,
+          index: e.target.dataset.idx
+        })
       }
       else {
         wx.showToast({
@@ -83,10 +75,10 @@ export default {
         content: '确认删除？',
         confirmText: '删除',
         confirmColor: '#F56C6C',
-        success(result) {
+        success: result => {
           if (result.confirm) {
             this.$emit('delete', {
-              order: this.order
+              order: this.copyData.order
             })
           }
         }

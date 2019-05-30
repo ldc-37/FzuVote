@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="search">
-      <input type="text" class="search-input">
-      <img src="/static/images/icon_search2.png" class="icon-40">
+      <input type="text" class="search-input" v-model.lazy="searchWord">
+      <img src="/static/images/icon_search2.png" class="icon-40" @click="search">
     </div>
     <div class="result">
       <card :infoData="item" v-for="(item, index) in resultList" :key="index"></card>
@@ -16,19 +16,29 @@ import card from '@/components/card'
 export default {
   data() {
     return {
+      searchWord: '',
       resultList: [
         {
+          id: 321,
+          type: 'Election',
           title: '关于谁应该请吃饭的投票',
           imgSrc: '/static/images/testbg.jpg',
-          creator: '西二在线',
+          creator: '评选模式',
           joinNum: '23',
           voteNum: '123',
-          endTime: '2.20 22:22',
+          endTime: '2019-05-30 22:22',
           userState: 1,
         },
       ]
     }
   },
+
+  methods: {
+    async search() {
+      this.resultList = await this.$net.search(this.searchWord)
+    }
+  },
+
   components: {
     card
   }

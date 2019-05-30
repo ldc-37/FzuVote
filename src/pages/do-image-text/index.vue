@@ -1,26 +1,27 @@
 <template>
   <div>
     <messagebox v-if="showBox" @close="showBox = false">
-      <h3 class="m-title">问卷标题</h3>
+      <h3 class="m-title">{{voteInfo.title}}</h3>
       <div class="m-part">
         <div class="m-name">主办方</div>
-        <div class="m-text">数计学院</div>
+        <div class="m-text">{{voteInfo.host}}</div>
       </div>
       <div class="m-part">
-        <div class="m-name">主办方</div>
-        <div class="m-text">数计1学院</div>
-        <div class="m-text">数计学2院</div>
-        <div class="m-text">数计3学院</div>
+        <div class="m-name">活动时间</div>
+        <!-- <div class="m-text">报名时间 {{voteInfo.signupTimeStart}}-{{voteInfo.signupTimeEnd}}</div> -->
+        <div class="m-text">投票时间 {{voteInfo.voteTimeStart}}-{{voteInfo.voteTimeEnd}}</div>
       </div>
       <div class="m-part">
-        <div class="m-name">主办方</div>
-        <div class="m-text">数计1学院</div>
-        <div class="m-text">数计学2院</div>
-        <div class="m-text">数计3学院</div>
+        <div class="m-name">投票规则</div>
+        <div class="m-text">每位用户每天可投{{voteInfo.maxVoteTimes}}次</div>
+      </div>
+      <div class="m-part">
+        <div class="m-name">活动说明</div>
+        <div class="m-text">{{voteInfo.desc}}</div>
       </div>
     </messagebox>
 
-    <div class="vote-detail" @click="showBox = true">
+    <div class="vote-detail" @click="showBox = true" v-show="!showBox">
       <img src="/static/images/shape2.png" class="fix-float-bg">
       <span class="fix-float-text">活动说明</span>
     </div>
@@ -43,21 +44,21 @@
     <statistic :stat="{...statistic}"></statistic>
 
     <div class="vote-info">
-      <p class="large-text">关于什么的活动标题</p>
-      <p class="vote-desc">说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字</p>
+      <p class="large-text">{{voteInfo.title}}</p>
+      <p class="vote-desc">{{voteInfo.desc}}</p>
     </div>
 
     <div class="search" v-if="!showBox">
-      <input type="text" class="search-input" v-model="searchWord" placeholder="搜索编号/名字">
+      <input type="text" class="search-input" v-model.lazy="searchWord" placeholder="搜索编号/名字">
       <img src="/static/images/icon_search2.png" class="icon-40" @click="search">
     </div>
 
     <radio-group @change="changeRatio">
-      <card :data="item" v-for="(item, index) in voteData" :key="index"></card></card>
+      <card :data="item" :voting="isVoting" v-for="(item, index) in voteData" :key="index"></card></card>
     </radio-group>
 
     <div class="btn-area">
-      <button class="btn" :disabled="nowSelectId < 0" :loading="btnLoading" @click="vote">投票</button>
+      <button class="btn" hover-class="btn-hover" :disabled="nowSelectId < 0 || !isVoting" :loading="btnLoading" @click="vote">投票</button>
     </div>
   </div>
 </template>
@@ -72,30 +73,49 @@ export default {
   data() {
     return {
       showBox: false,
+      // @该属性对应功能需要完善
+      isVoting: true,
       swiperState: 0,
       swiperImage: [
-        '/static/images/testswiper.png',
-        '/static/images/testswiper.png',
-        '/static/images/testswiper.png',
+        '/static/images/testkh.png',
+        '/static/images/testkh.png',
+        '/static/images/testkh.png',
       ],
       statistic: {
         signed: 29,
-        voted: 9989,
-        visited: 10101,
+        voted: 389,
+        visited: 1101,
+        // mount时生成
         leftTime: {}
       },
       searchWord: '',
       nowSelectId: -1,
+      voteInfo: {
+        host: '不知名的路人',
+        title: '你最喜欢的口红是哪一种？',
+        maxVoteTimes: 3,
+        voteTimeStart: '2019-06-22 10:00',
+        voteTimeEnd: '2019-06-26 10:00',
+        // signupTimeStart: '2019-06-22 10:00',
+        // signupTimeEnd: '2019-06-26 10:00',
+        desc: '请在下方投票选出你最喜欢的口红种类，最多可以选择两项，谢谢！'
+      },
       voteData: [
         {
-        id: 1,
-        teamName: '你好啊',
-        teamDesc: '说明说明说明说明说明说明说明说明说明',
+          id: 1,
+          name: 'Dior',
+          desc: '克里斯汀·迪奥（英语：Christian Dior），简称迪奥（Dior），是法国著名时尚消费品牌',
+          image: '/static/images/test/kh1.jpg',
+          Num: 56,
+          Voted: false,
         },
         {
-        id: 2,
-        teamName: '你好啊',
-        teamDesc: '说明说明说明说明说明说明说明说明说明',
+          id: 2,
+          name: 'M·A·C',
+          desc: '是雅诗兰黛化妆品集团旗下第一个非由兰黛夫人自创的品牌',
+          image: '/static/images/test/kh2.jpg',
+          Num: 68,
+          Voted: false,
         },
       ],
       btnLoading: false,
@@ -118,6 +138,8 @@ export default {
       this.btnLoading = true
 
       setTimeout(() => {
+        this.voteData.find(item => item.id === this.nowSelectId).Voted = true
+        this.isVoting = false
         wx.showToast({
           title: '投票成功'
         })
@@ -126,10 +148,19 @@ export default {
     }
   },
 
-  mounted() {
-    this.statistic.leftTime = util.getRemainTime(new Date(2019, 5-1, 27).valueOf())
+  async mounted() {
+    const data = await this.$net.getImageText(this.$mp.query.id)
+    this.swiperImage = data.swiperImage
+    this.statistic = data.statistic
+    this.voteInfo = data.voteInfo
+    this.voteData = data.voteData
+
+    wx.setNavigationBarTitle({
+      title: this.voteInfo.title
+    })
+    this.statistic.leftTime = util.getRemainTime(new Date(data.voteInfo.voteTimeEnd).valueOf())
     const cycle = setInterval(() => {
-      this.statistic.leftTime = util.getRemainTime(new Date(2019, 5-1, 27).valueOf())
+      this.statistic.leftTime = util.getRemainTime(new Date(data.voteInfo.voteTimeEnd).valueOf())
     }, 1000);
   },
 
@@ -142,7 +173,7 @@ export default {
 </script>
 
 <style scoped>
-.do-selection {
+.do-election {
   font-size: 16px;
 }
 
