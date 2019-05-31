@@ -10,10 +10,6 @@
 
     <div class="question-list border-top-gray">
       <question :voteData="item" :order="index + 1" @update="handleUpdate" @delete="handleDelete" @minus="handleMinus" v-for="(item, index) in qlist" :key="index"></question>
-      <div v-for="(item, index) in qlist" :key="index">
-        item: {{item.question}}
-        order: {{index + 1}}
-      </div>
       <button class="btn btn-simple" @click="handleAdd">添加题目</button>
     </div>
 
@@ -53,8 +49,7 @@ export default {
       desc: '',
       qlist: [
         {
-          // order: '1',
-          question: '1',
+          question: '',
           answers: [
             '',
             '',
@@ -63,8 +58,7 @@ export default {
           imgUrl: '',
         },
         {
-          // order: '2',
-          question: '2',
+          question: '',
           answers: [
             '',
             '',
@@ -98,11 +92,8 @@ export default {
       })
     },
     handleDelete(e) {
-      console.log(e);
-      
       if (this.qlist.length > 1) {
         this.qlist.splice(e.order - 1, 1)
-        // this.$forceUpdate()
       }
       else {
         wx.showToast({
@@ -126,10 +117,7 @@ export default {
     handleMinus(e) {
       this.qlist[e.order - 1].answers.splice(e.index, 1)
     },
-    // handleChangeSetting(e) {
-    //   this.showInGround = e.mp.detail.value
-    // },
-    launch() {
+    async launch() {
       this.loading = true
       const Questionnaire = []
       for (let item of this.qlist) {
@@ -144,39 +132,20 @@ export default {
         Describe: this.desc,
         Begin_time: `${this.voteTime.startDate} ${this.voteTime.startTime}:00`,
         End_time: `${this.voteTime.endDate} ${this.voteTime.endTime}:00`,
-        Is_Public: this.showInGround ? '1' : '0',
+        Is_Public: +this.showInGround,
         Questionnaire
       }
 
-
+      const res = await this.$net.createQuestionnaire(data)
+      this.loading = false
+      wx.showToast({
+        title: '创建成功',
+      })
       setTimeout(() => {
-        this.loading = false
-          wx.showToast({
-            title: '创建成功',
-            image: '/static/images/icon_task_done.png',
-            duration: 2000
-          })
+        wx.redirectTo({
+          url: '/pages/do-questionnaire/main?id=' + res.Data.Questionnaire
+        })
       }, 1000);
-      // this.$fly.post('/questionnaire/new', JSON.stringify(data)).then(res => {
-      //   if (res.Status === 200) {
-      //   this.loading = false
-      //     wx.showToast({
-      //       title: '创建成功',
-      //       image: '/static/images/icon_task_done.png',
-      //       duration: 2000
-      //     })
-      //     setTimeout(() => {
-      //       wx.navigateBack()
-      //     }, 1000)
-      //   }
-      // }).catch(() => {
-      //   wx.showToast({
-      //     title: '网络错误，请重试',
-      //     icon: 'none',
-      //     duration: 2000
-      //   })
-      //   this.loading = false
-      // })
     }
 
   },

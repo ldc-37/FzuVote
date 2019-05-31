@@ -1,11 +1,11 @@
 <template>
   <div class="launch-election">
     <div class="uploader">
-      <uploader :limit="5"></uploader>
+      <uploader :limit="5" @update="imagesId = $event"></uploader>
     </div>
 
     <div class="whole-info border-top-gray">
-      <description typeNameCN=""></description>
+      <description typeNameCN="" @update="title = $event.title; desc = $event.desc"></description>
     </div>
 
     <div class="one-part border-top-gray">
@@ -72,7 +72,7 @@ import duration from '@/components/duration-setter'
 export default {
   data() {
     return {
-      images: [],
+      imagesId: [],
       title: '',
       desc: '',
       hostName: '',
@@ -94,14 +94,42 @@ export default {
     changePicker(range, attrName, e) {
       this[attrName] = range[e.mp.detail.value]
     },
-    publish() {
+    async publish() {
       this.btnLoading = true
+                      console.log(this.$data)
+      // const Data = []
+      // for (let item of this.teams) {
+      //   Data.push({
+      //     Pic: item.imageId,
+      //     Name: item.name,
+      //     Describe: item.desc,
+      //     Vote: "0"
+      //   })
+      // }
+      const res = await this.$net.createElection({
+        SessionId: this.$store.state.sessionId,
+        MasterInfo: this.hostName,
+        Title: this.title,
+        Describe: this.desc,
+        BeginVoteTime: `${this.voteTime.startDate} ${this.voteTime.startTime}:00`,
+        EndVoteTime: `${this.voteTime.endDate} ${this.voteTime.endTime}:00`,
+        BeginApplyTime: `${this.signupTime.startDate} ${this.signupTime.startTime}:00`,
+        EndApplyTime: `${this.signupTime.endDate} ${this.signupTime.endTime}:00`,
+        IsPublic: +this.showInGround,
+        SharePic: this.imagesId,
+        MostVoteADay: this.maxVoteNum,
+        IsMultipleChoice: +this.setMulti,
+        LeastChoice: this.minOptionNum,
+        MostChoice: this.maxVoteNum,
+      })
+      this.btnLoading = false
+      wx.showToast({
+        title: '创建成功'
+      })
       setTimeout(() => {
-        this.btnLoading = false
-        wx.showToast({
-          title: '创建成功'
+        wx.redirectTo({
+          url: '/pages/do-election/main?id=' + res.Data.Election_id
         })
-        // @返回
       }, 1000);
     }
   },

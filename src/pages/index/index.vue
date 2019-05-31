@@ -77,7 +77,7 @@ export default {
       tabState: 0,
       votes: [
         {
-          id: '123',
+          id: '',
           type: 'Election',
           title: '中国大学最具人气歌手评比',
           imgSrc: '/static/images/testsinger.png',
@@ -88,7 +88,7 @@ export default {
           userState: 1,
         },
         {
-          id: '456',
+          id: '',
           type: 'Questionnaire',
           title: '2019国产手机用户体验调查',
           imgSrc: '/static/images/testphone.png',
@@ -99,7 +99,7 @@ export default {
           userState: 0,
         },
         {
-          id: '789',
+          id: '',
           type: 'Picvote',
           title: '你最喜欢的口红是哪一种？',
           imgSrc: '/static/images/testkh.png',

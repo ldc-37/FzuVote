@@ -39,10 +39,19 @@ export default {
     };
   },
 
-  mounted() {
-    wx.setNavigationBarTitle({
-      title: this.title
-    })
+  async mounted() {
+    if (this.$mp.query.id) {
+      const data = await this.$net.getQuestionnaireResult(this.$mp.query.id)
+      this.title = data.title
+      this.data = data.data
+
+      wx.setNavigationBarTitle({
+        title: this.title
+      })
+    }
+    else {
+      console.log('当前为演示页面')
+    }
   },
 };
 </script>

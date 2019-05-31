@@ -34,6 +34,7 @@ export default {
       name: '',
       wechatId: '',
       image: '',
+      imageId: '',
       desc: '',
 
       btnLoading: false,
@@ -46,18 +47,33 @@ export default {
         sizeType: ['original', 'compressed'],
         sourceType: ['album', 'camera'],
         success: res => {
-          this.image = res.tempFilePaths
+          this.image = res.tempFilePaths[0]
+          wx.uploadFile({
+            url: this.$fly.config.baseURL + '/common/pic',
+            filePath: res.tempFilePaths[0],
+            name: 'file',
+            success: data => {
+              this.imageId = JSON.parse(data.data).Pic_id
+            }
+          })
         }
       })
     },
-    signup() {
+    async signup() {
       this.btnLoading = true
-
+      await this.$net.joinElection({
+        "Name": this.name,
+        "Pic": this.imageId,
+        "Describe": this.desc,
+        "ElectionId": this.$mp.query.id,
+        "WechatNumber": this.wechatId,
+        "SessionId": this.$store.state.sessionId,
+      })
+      this.btnLoading = false
+      wx.showToast({
+        title: '报名成功'
+      })
       setTimeout(() => {
-        this.btnLoading = false
-        wx.showToast({
-          title: '报名成功'
-        })
         wx.navigateBack()
       }, 1000);
     }

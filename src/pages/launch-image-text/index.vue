@@ -173,7 +173,7 @@ export default {
         Anonymity: +this.anonymous.toString(),
         Data
       })
-      if (res.Status === 200) {
+      // if (res.Status === 200) {
         this.btnLoading = false
         wx.showToast({
           title: '创建成功'
@@ -183,10 +183,10 @@ export default {
             url: '/pages/do-image-text/main?id=' + res.Data.PicvoteId
           })
         }, 1000);
-      }
-      else {
-        throw new Error(res.Status)
-      }
+      // }
+    //   else {
+    //     throw new Error(res.Status)
+    //   }
     }
   },
 

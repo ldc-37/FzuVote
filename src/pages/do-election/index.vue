@@ -79,7 +79,6 @@
     </div>
 
 
-
     <div class="fix-footer">
       <div class="footer-box border-r">
         <button plain class="footer-btn" @click="navToSignup">
@@ -88,14 +87,12 @@
         </button>
       </div>
       <div class="footer-box">
-        <button plain class="footer-btn" @click="share" open-type="share">
+        <button plain class="footer-btn" open-type="share">
           <img src="/static/images/icon_share.png" class="icon-40">
           <span class="footer-text">分享活动</span>
         </button>
       </div>
     </div>
-
-
   </div>
 </template>
 
@@ -176,15 +173,21 @@ export default {
         this.voteData.sort((a, b) => b.vote - a.vote)
       }
     },
-    vote(id) {
+    async vote(id) {
       wx.showModal({
         title: '投票确认',
         content: `确认为${id}号[${this.voteData.find(item => item.id === id).name}]投票吗？`,
-        success: res => {
+        success: async res => {
           if (res.confirm) {
+            await this.$net.voteElection({
+              ElectionId: this.$mp.query.id,
+              SessionId: this.$store.state.sessionId,
+              Vote: [id]
+            })
             wx.showToast({
               title: '投票成功'
             })
+            console.log(this.voteData.find(item => item.id === id));
             this.voteData.find(item => item.id === id).vote++
           }
         }
@@ -192,22 +195,32 @@ export default {
     },
     navToSignup() {
       wx.navigateTo({
-        url: '/pages/join-election/main'
+        url: '/pages/join-election/main?id=' + this.$mp.query.id
       })
+      // @刷新
     },
-    share() {
-
-    }
   },
-  mounted() {
-    wx.setNavigationBarTitle({
-      title: this.voteInfo.title
-    })
-
-    this.statistic.leftTime = util.getRemainTime(new Date(2019, 6-1, 27).valueOf())
-    const cycle = setInterval(() => {
-      this.statistic.leftTime = util.getRemainTime(new Date(2019, 6-1, 27).valueOf())
-    }, 1000);
+  async mounted() {
+    if (this.$mp.query.id) {
+      const data = await this.$net.getElection(this.$mp.query.id)
+      this.voteInfo = data.voteInfo
+      this.voteData = data.voteData
+  
+      wx.setNavigationBarTitle({
+        title: this.voteInfo.title
+      })
+      this.statistic.leftTime = util.getRemainTime(new Date(data.voteInfo.voteTimeEnd).valueOf())
+      const cycle = setInterval(() => {
+        this.statistic.leftTime = util.getRemainTime(new Date(data.voteInfo.voteTimeEnd).valueOf())
+      }, 1000)
+    }
+    else {
+      this.statistic.leftTime = util.getRemainTime(new Date(2019, 6-1, 16).valueOf())
+      const cycle = setInterval(() => {
+        this.statistic.leftTime = util.getRemainTime(new Date(2019, 6-1, 16).valueOf())
+      }, 1000)
+      console.log('当前为演示页面')
+    }
   },
 
   components: {

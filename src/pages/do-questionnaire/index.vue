@@ -115,12 +115,9 @@ export default {
       ],
       answers: [],
       btnLoading: false,
-
     }
   },
-  computed: {
 
-  },
   methods: {
     doSelect(e) {
       const val = e.mp.detail.value
@@ -160,7 +157,7 @@ export default {
         this.nowQuestion++
       }
     },
-    handleSubmit() {
+    async handleSubmit() {
       if (!this.nowChecked.length) {
         wx.showToast({
           title: '请选择一个选项',
@@ -177,31 +174,32 @@ export default {
         this.answers.push(this.nowChecked)
         this.btnLoading = true
 
-        const Vote = []
+        const Vote = [], Answers = []
         for (let i = 0; i < this.answers.length; i++) {
-          const Answers = []
-          for (let j = 0; j < this.answers[i].length; j++) {
-            Answers.push(this.list[i].options[j])
-          }
+          // @待修改
+          // for (let j = 0; j < this.answers[i].length; j++) {
+          //   Answers.push(this.list[i].options[j])
+          // }
           Vote.push({
             Title: this.list[i].question,
-            Answers
+            // Answers
+            Answers: this.list[i].options[this.answers[i][0]]
           })
         }
         const data = {
           SessionId: this.$store.state.sessionId,
           Vote,
-          Questionnaire_id: 1
+          Questionnaire_id: this.$mp.query.id
         }
-        console.log(data);
-
-        // this.$fly.post('/questionnaire/vote', JSON.stringify(data))
+        const res = await this.$net.voteQuestionnaire(data)
+        this.btnLoading = false
+        wx.showToast({
+          title: '提交成功'
+        })
         setTimeout(() => {
-          this.btnLoading = false
-          wx.showToast({
-            title: '提交成功'
+          wx.navigateTo({
+            url: '/pages/questionnaire-result/main?id=' + this.$mp.query.id
           })
-          // settimtout 查看结果
         }, 1000);
       }
     },
@@ -217,11 +215,19 @@ export default {
     // handleChickCheckbox(){},
 
   },
-  mounted() {
-    wx.setNavigationBarTitle({
-      title: this.title
-    })
-    this.topArr = [...Array(Math.min(5, this.list.length)).keys()].map(item => item + 1)
+  async mounted() {
+    if (this.$mp.query.id) {
+      const data = await this.$net.getQuestionnaire(this.$mp.query.id)
+      this.list = data
+
+      wx.setNavigationBarTitle({
+        title: this.title
+      })
+      this.topArr = [...Array(Math.min(5, this.list.length)).keys()].map(item => item + 1)
+    }
+    else {
+      console.log('当前为演示页面')
+    }
   },
 }
 </script>

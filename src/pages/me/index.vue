@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="l-header">
-      <!-- <div id="text-me">我的 </div> -->
       <div class="top">
         <div class="avatar-div">
           <img src="/static/images/logo.png" class="avatar-img">
@@ -61,12 +60,19 @@ export default {
       }
     }
   },
+
   methods: {
     navTo(url) {
       wx.navigateTo({
         url
       })
     }
+  },
+
+  async mounted() {
+    const data = await this.$net.getUserStat(this.$store.state.sessionId)
+      // @使用Object.assign()将后面对象的属性合并到前面的对象上
+    Object.assign(this.userData, data)
   },
 }
 </script>

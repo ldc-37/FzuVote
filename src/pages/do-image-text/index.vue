@@ -134,34 +134,52 @@ export default {
         wx.hideLoading()
       }, 1000);
     },
-    vote() {
+    async vote() {
       this.btnLoading = true
-
-      setTimeout(() => {
-        this.voteData.find(item => item.id === this.nowSelectId).Voted = true
+      this.voteData.find(item => item.id === this.nowSelectId).Voted = true
+      
+      const res = await this.$net.voteImageText({
+        SessionId: this.$store.state.sessionId,
+        PicvoteId: this.$mp.query.id,
+        // @临时设置为单选
+        Vote: [this.nowSelectId]
+      })
+      this.btnLoading = false
+      if (res.Status === 200) {
         this.isVoting = false
         wx.showToast({
           title: '投票成功'
         })
-        this.btnLoading = false
-      }, 1000)
+      }
+      else {
+        throw new Error(res.Status)
+      }
     }
   },
 
   async mounted() {
-    const data = await this.$net.getImageText(this.$mp.query.id)
-    this.swiperImage = data.swiperImage
-    this.statistic = data.statistic
-    this.voteInfo = data.voteInfo
-    this.voteData = data.voteData
-
-    wx.setNavigationBarTitle({
-      title: this.voteInfo.title
-    })
-    this.statistic.leftTime = util.getRemainTime(new Date(data.voteInfo.voteTimeEnd).valueOf())
-    const cycle = setInterval(() => {
+    if (this.$mp.query.id) {
+      const data = await this.$net.getImageText(this.$mp.query.id)
+      this.swiperImage = data.swiperImage
+      this.statistic = data.statistic
+      this.voteInfo = data.voteInfo
+      this.voteData = data.voteData
+  
+      wx.setNavigationBarTitle({
+        title: this.voteInfo.title
+      })
       this.statistic.leftTime = util.getRemainTime(new Date(data.voteInfo.voteTimeEnd).valueOf())
-    }, 1000);
+      const cycle = setInterval(() => {
+        this.statistic.leftTime = util.getRemainTime(new Date(data.voteInfo.voteTimeEnd).valueOf())
+      }, 1000)
+    }
+    else {
+      this.statistic.leftTime = util.getRemainTime(new Date(2019, 6-1, 16).valueOf())
+      const cycle = setInterval(() => {
+        this.statistic.leftTime = util.getRemainTime(new Date(2019, 6-1, 16).valueOf())
+      }, 1000)
+      console.log('当前为演示页面')
+    }
   },
 
   components: {
