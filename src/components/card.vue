@@ -27,7 +27,7 @@ export default {
   props: ['infoData'],
   data() {
     return {
-      // @切勿使用展开运算符，否则不再{{}}中不再是响应式的属性，无法同步props的变更
+      // 切勿使用展开运算符，否则不再{{}}中不再是响应式的属性，无法同步props的变更
       // ...this.infoData,
     }
   },

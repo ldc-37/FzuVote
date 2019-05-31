@@ -176,14 +176,14 @@ export default {
 
         const Vote = [], Answers = []
         for (let i = 0; i < this.answers.length; i++) {
-          // @待修改
+          // @该写法有误
           // for (let j = 0; j < this.answers[i].length; j++) {
           //   Answers.push(this.list[i].options[j])
           // }
           Vote.push({
             Title: this.list[i].question,
             // Answers
-            Answers: this.list[i].options[this.answers[i][0]]
+            Answers: this.list[i].options[this.answers[i][0] - 1]
           })
         }
         const data = {

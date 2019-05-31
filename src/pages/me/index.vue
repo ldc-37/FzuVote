@@ -71,7 +71,7 @@ export default {
 
   async mounted() {
     const data = await this.$net.getUserStat(this.$store.state.sessionId)
-      // @使用Object.assign()将后面对象的属性合并到前面的对象上
+      // 使用Object.assign()将后面对象的属性合并到前面的对象上
     Object.assign(this.userData, data)
   },
 }

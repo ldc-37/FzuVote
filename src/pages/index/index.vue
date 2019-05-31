@@ -144,12 +144,17 @@ export default {
   },
 
   mounted () {
+    wx.showToast({
+      title: '当前为演示模式，数据仅作为展示之用',
+      icon: 'none',
+      duration: 5000
+    })
     if (!this.sessionId)
       wx.login({
         success: (res) => {
           if (res.code) {
             console.log('获取token成功：' + res.code)
-            // @仅此处POST使用queryString方式
+            // 仅此处POST使用queryString方式
             this.$fly.post('/user/login?js_code=' + res.code).then(res_2 => {
               if (res_2.Status === 200) {
                 this.setSessionId(res_2.SessionId)
@@ -163,7 +168,7 @@ export default {
                 console.error(res_2)
                 wx.showToast({
                   title: '服务端登录失败',
-                  image: '/static/images/icon_task_done.png',
+                  image: '/static/images/icon_close.png',
                   duration: 3000
                 })
               }
@@ -172,7 +177,7 @@ export default {
               // TODO:图标更改
               wx.showToast({
                 title: '服务端登录失败',
-                image: '/static/images/icon_task_done.png',
+                image: '/static/images/icon_close.png',
                 duration: 3000
               })
             })

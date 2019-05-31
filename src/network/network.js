@@ -30,8 +30,7 @@ const network = {
           imgSrc: item.Pic ? item.Pic[0] : '',
           creator: typeCN,
           joinNum: item.JoinedNumber,
-          // @接口没给
-          voteNum: item.JoinedNumber,
+          voteNum: item.VotedNumber,
           endTime: item.EndTime,
         })
       }
@@ -60,8 +59,7 @@ const network = {
           imgSrc: item.Pic ? item.Pic[0] : '',
           creator: typeCN,
           joinNum: item.JoinedNumber,
-          // @接口没给
-          voteNum: item.JoinedNumber,
+          voteNum: item.VotedNumber,
           endTime: item.EndTime,
         })
       }
@@ -111,13 +109,14 @@ const network = {
   async getImageText(id) {
     const res = await fly.get('/picvote/get/' + id)
     if (res.Status === 200) {
-      // @注意空字符串数组、三目运算符与布尔值之间的关系
+      // 注意空字符串数组、三目运算符与布尔值之间的关系
       const swiperImage = +res.Data.SharePic 
           ? res.Data.SharePic.map(item => fly.config.baseURL + '/common/pic/' + item)
           : ['/static/images/no-pic.gif']
       const statistic = {
         signed: res.Data.JoinedNumber,
-        voted: res.Data.VotedNumber,
+        // @需修改
+        voted: res.Data.VotedNumber || res.Data.JoinedNumber,
         visited: res.Data.PageView,
         leftTime: {}
       }
@@ -174,7 +173,8 @@ const network = {
           : ['/static/images/no-pic.gif']
       const statistic = {
         signed: res.Data.JoinedNumber,
-        voted: res.Data.VotedNumber,
+        // @需修改
+        voted: res.Data.VotedNumber || res.Data.JoinedNumber,
         visited: res.Data.PageView,
         leftTime: {}
       }
@@ -314,8 +314,7 @@ const network = {
           imgSrc: item.Pic ? item.Pic[0] : '',
           creator: typeCN,
           joinNum: item.JoinedNumber,
-          // @接口没给
-          voteNum: item.JoinedNumber,
+          voteNum: item.VotedNumber,
           endTime: item.EndTime,
         })
       }
