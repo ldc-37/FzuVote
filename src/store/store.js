@@ -12,11 +12,19 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     sessionId: '',
+    name: '',
+    avatarUrl: '',
   },
   mutations: {
     setSessionId(state, sessionId) {
       state.sessionId = sessionId
-    }
+    },
+    setName(state, name) {
+      state.name = name
+    },
+    setAvatar(state, avatarUrl) {
+      state.avatarUrl = avatarUrl
+    },
   },
   actions: {
 

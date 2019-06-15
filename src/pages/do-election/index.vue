@@ -36,7 +36,7 @@
         @change="swiperState = $event.mp.detail.current"
       >
         <swiper-item v-for="(src, index) in swiperImage" :key="index">
-          <img :src="src" class="swiper-img">
+          <img :src="src" mode="aspectFit" class="swiper-img" @click="previewImage">
         </swiper-item>
       </swiper>
     </div>
@@ -194,18 +194,24 @@ export default {
       })
     },
     navToSignup() {
-      wx.navigateTo({
+      wx.redirectTo({
         url: '/pages/join-election/main?id=' + this.$mp.query.id
       })
-      // @刷新
+    },
+    previewImage(e){
+      wx.previewImage({
+        current: e.mp.detail.current,
+        urls: this.swiperImage
+      })
     },
   },
+
   async mounted() {
     if (this.$mp.query.id) {
       const data = await this.$net.getElection(this.$mp.query.id)
       this.voteInfo = data.voteInfo
       this.voteData = data.voteData
-  
+
       wx.setNavigationBarTitle({
         title: this.voteInfo.title
       })

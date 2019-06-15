@@ -36,7 +36,7 @@
         @change="swiperState = $event.mp.detail.current"
       >
         <swiper-item v-for="(src, index) in swiperImage" :key="index">
-          <img :src="src" class="swiper-img">
+          <img :src="src" mode="aspectFit" class="swiper-img" @click="previewImage">
         </swiper-item>
       </swiper>
     </div>
@@ -137,7 +137,7 @@ export default {
     async vote() {
       this.btnLoading = true
       this.voteData.find(item => item.id === this.nowSelectId).Voted = true
-      
+
       const res = await this.$net.voteImageText({
         SessionId: this.$store.state.sessionId,
         PicvoteId: this.$mp.query.id,
@@ -154,7 +154,13 @@ export default {
       else {
         throw new Error(res.Status)
       }
-    }
+    },
+    previewImage(e){
+      wx.previewImage({
+        current: e.mp.detail.current,
+        urls: this.swiperImage
+      })
+    },
   },
 
   async mounted() {
@@ -164,7 +170,7 @@ export default {
       this.statistic = data.statistic
       this.voteInfo = data.voteInfo
       this.voteData = data.voteData
-  
+
       wx.setNavigationBarTitle({
         title: this.voteInfo.title
       })

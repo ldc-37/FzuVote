@@ -1,3 +1,5 @@
+import store from '../store/store'
+
 var Fly = require("flyio/dist/npm/wx")
 const fly = new Fly
 fly.interceptors.request.use(req => {
@@ -7,7 +9,10 @@ fly.interceptors.response.use(res => {
   console.info(res)
   return res.data
 })
-fly.config.baseURL = 'http://119.23.35.17:8080/api'
+fly.config.baseURL = 'https://sugarchl.top/api'
+// fly.config.baseURL = ''
+
+const SessionId = () => store.state.sessionId
 
 
 const network = {
@@ -27,7 +32,7 @@ const network = {
           id: item.Id,
           type: item.Type,
           title: item.Title || '未命名',
-          imgSrc: item.Pic ? item.Pic[0] : '',
+          imgSrc: item.Pic[0] ? item.Pic[0] : '/static/images/no-pic.gif',
           creator: typeCN,
           joinNum: item.JoinedNumber,
           voteNum: item.VotedNumber,
@@ -56,7 +61,7 @@ const network = {
           id: item.Id,
           type: item.Type,
           title: item.Title || '未命名',
-          imgSrc: item.Pic ? item.Pic[0] : '',
+          imgSrc: item.Pic[0] ? item.Pic[0] : '/static/images/no-pic.gif',
           creator: typeCN,
           joinNum: item.JoinedNumber,
           voteNum: item.VotedNumber,
@@ -107,10 +112,10 @@ const network = {
     return res
   },
   async getImageText(id) {
-    const res = await fly.get('/picvote/get/' + id)
+    const res = await fly.get('/picvote/get/' + SessionId() + '/' + id)
     if (res.Status === 200) {
       // 注意空字符串数组、三目运算符与布尔值之间的关系
-      const swiperImage = +res.Data.SharePic 
+      const swiperImage = +res.Data.SharePic
           ? res.Data.SharePic.map(item => fly.config.baseURL + '/common/pic/' + item)
           : ['/static/images/no-pic.gif']
       const statistic = {
@@ -165,10 +170,10 @@ const network = {
     return res
   },
   async getElection(id) {
-    const res = await fly.get('/election/get/' + id)
+    const res = await fly.get('/election/get/' + SessionId() + '/' + id)
     if (res.Status === 200) {
       // 注意空字符串数组、三目运算符与布尔值之间的关系
-      const swiperImage = +res.Data.SharePic 
+      const swiperImage = +res.Data.SharePic
           ? res.Data.SharePic.map(item => fly.config.baseURL + '/common/pic/' + item)
           : ['/static/images/no-pic.gif']
       const statistic = {
@@ -233,7 +238,7 @@ const network = {
     return res
   },
   async getQuestionnaire(id) {
-    const res = await fly.get('questionnaire/get_title/' + id)
+    const res = await fly.get('questionnaire/get_title/' + SessionId() + '/' + id)
     if (res.Status !== 200) {
       throw new Error(res.Status)
     }
@@ -246,10 +251,13 @@ const network = {
         options: question.slice(1, question.length)
       })
     }
-    return list
+    return {
+      list,
+      title: res.Title
+    }
   },
   async getQuestionnaireResult(id) {
-    const res = await fly.get('/questionnaire/get/' + id)
+    const res = await fly.get('/questionnaire/get/' + SessionId() + '/' + id)
     if (res.Status !== 200) {
       throw new Error(res.Status)
     }

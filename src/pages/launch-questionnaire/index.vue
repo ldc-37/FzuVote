@@ -1,7 +1,7 @@
 <template>
   <div class="launch-questionnaire">
     <div class="uploader">
-      <uploader :limit="1"></uploader>
+      <uploader :limit="1" @update="imagesId = $event"></uploader>
     </div>
 
     <div class="whole-info border-top-gray">
@@ -47,6 +47,7 @@ export default {
     return {
       title: '',
       desc: '',
+      imagesId: [],
       qlist: [
         {
           question: '',
@@ -118,6 +119,28 @@ export default {
       this.qlist[e.order - 1].answers.splice(e.index, 1)
     },
     async launch() {
+      const isEmptyBlank = () => {
+        let empty = false
+        this.qlist.forEach(item => {
+          if (item.question.trim() === '')
+            empty = true
+          item.answers.forEach(answer => {
+            if (answer.trim() === '')
+              empty = true
+            })
+          })
+          if (empty) {
+            return true
+          }
+          return false
+      }
+      if (!this.title.trim() || isEmptyBlank()) {
+        wx.showToast({
+          title: '请先将内容填写完整',
+          icon: 'none'
+        })
+        return false
+      }
       this.loading = true
       const Questionnaire = []
       for (let item of this.qlist) {
@@ -130,6 +153,7 @@ export default {
         SessionId: this.$store.state.sessionId,
         Title: this.title,
         Describe: this.desc,
+        SharePic: this.imagesId,
         Begin_time: `${this.voteTime.startDate} ${this.voteTime.startTime}:00`,
         End_time: `${this.voteTime.endDate} ${this.voteTime.endTime}:00`,
         Is_Public: +this.showInGround,

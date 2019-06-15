@@ -28,5 +28,5 @@ fly.interceptors.response.use(res => {
   console.info(res)
   return res.data
 })
-fly.config.baseURL = 'http://119.23.35.17:8080/api'
+fly.config.baseURL = 'https://sugarchl.top/api'
 

@@ -1,8 +1,13 @@
+<!--
+功能：展示通用卡片
+参数：infoData: Object  卡片数据
+事件：无
+-->
 <template>
   <div class="card" @click="navToVote">
     <div class="body">
-      <img :src="infoData.imgSrc" class="main-pic">
-      <img src="/static/images/shape1.png" class="creator-bg">
+      <img :src="infoData.imgSrc" class="main-pic" mode="center">
+      <img src="/static/images/shape1.png" mode="center" class="creator-bg">
       <div class="creator">{{infoData.creator}}</div>
     </div>
     <div class="bottom">
@@ -27,7 +32,7 @@ export default {
   props: ['infoData'],
   data() {
     return {
-      // 切勿使用展开运算符，否则不再{{}}中不再是响应式的属性，无法同步props的变更
+      // 切勿使用展开运算符，否则{{}}中不再是响应式的属性，无法同步props的变更
       // ...this.infoData,
     }
   },

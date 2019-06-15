@@ -3,11 +3,13 @@
     <div class="l-header">
       <div class="top">
         <div class="avatar-div">
-          <img src="/static/images/logo.png" class="avatar-img">
+          <img :src="avatar" class="avatar-img">
+          <!-- <open-data type="userAvatarUrl"></open-data> -->
         </div>
         <div class="name-area">
-          <span id="username">{{ userData.username }}</span>
-          <button id="btn-wechat-data">同步微信资料</button>
+          <!-- <open-data id="username"><open-data type="userNickName"></open-data></span> -->
+          <span id="username">{{ username }}</span>
+          <button id="btn-wechat-data" open-type="getUserInfo" @getuserinfo="getUserInfo">同步微信资料</button>
         </div>
       </div>
     </div>
@@ -49,30 +51,71 @@
 </template>
 
 <script>
+import {mapMutations} from 'vuex'
+
 export default {
   data() {
     return {
       userData: {
-        username: 'FzuVote',
         voteNum: 1,
         launchNum: 1,
-        prizeNum: 0
+        prizeNum: 0,
       }
     }
   },
 
+  computed: {
+    username() {
+      return this.$store.state.name || 'FzuVote'
+    },
+    avatar() {
+      return this.$store.state.avatarUrl || '/static/images/logo.png'
+    }
+  },
+
   methods: {
+    ...mapMutations([
+      'setName',
+      'setAvatar',
+    ]),
     navTo(url) {
       wx.navigateTo({
         url
       })
+    },
+    getUserInfo(e) {
+      if (e.mp.detail.userInfo) {
+        wx.showToast({
+          title: '授权成功'
+        })
+        wx.getUserInfo({
+          success: res => {
+            var userInfo = res.userInfo
+            var nickName = userInfo.nickName
+            var avatarUrl = userInfo.avatarUrl
+            var gender = userInfo.gender //性别 0：未知、1：男、2：女
+            this.setName(nickName)
+            this.setAvatar(avatarUrl)
+
+            this.$forceUpdate()
+          }
+        })
+      }
+      else {
+        wx.showToast({
+          icon: 'none',
+          title: '已取消授权',
+          duration: 1000
+        })
+        console.warn(e.mp.detail.errMsg)
+      }
     }
   },
 
   async mounted() {
     const data = await this.$net.getUserStat(this.$store.state.sessionId)
       // 使用Object.assign()将后面对象的属性合并到前面的对象上
-    Object.assign(this.userData, data)
+    // Object.assign(this.userData, data)
   },
 }
 </script>

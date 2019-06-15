@@ -1,7 +1,7 @@
 <template>
   <div class="vote-card">
     <div class="image-area">
-      <img :src="data.image" class="vote-img">
+      <img :src="data.image" mode="center" class="vote-img">
       <div class="vote-id">{{data.id >= 10 ? data.id : '0' + data.id}}</div>
     </div>
     <div class="info-area">

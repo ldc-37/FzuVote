@@ -40,7 +40,9 @@
         ></card>
       </div>
     </div>
-
+    <div class="auth-tips" @click="switchTab" v-if="!isAuth_">
+      未授权个人信息，可能影响部分功能。<br>>>>点此前往授权
+    </div>
   </div>
 </template>
 
@@ -51,6 +53,7 @@ import { mapState, mapMutations } from 'vuex'
 export default {
   data () {
     return {
+      isAuth_: false,
       swiperImage: [
         {
         src: '/static/images/testlove.png',
@@ -127,10 +130,32 @@ export default {
   methods: {
     ...mapMutations([
       'setSessionId',
+      'setName',
+      'setAvatar',
     ]),
+    updateUserInfo_() {
+      wx.getUserInfo({
+        success: res => {
+          var userInfo = res.userInfo
+          var nickName = userInfo.nickName
+          var avatarUrl = userInfo.avatarUrl
+          var gender = userInfo.gender //性别 0：未知、1：男、2：女
+          var province = userInfo.province
+          var city = userInfo.city
+          var country = userInfo.country
+          this.setName(nickName)
+          this.setAvatar(avatarUrl)
+        }
+      })
+    },
     navToSearch() {
       wx.navigateTo({
         url: '/pages/search/main'
+      })
+    },
+    switchTab() {
+      wx.switchTab({
+        url: '/pages/me/main'
       })
     },
     async changeTab(state) {
@@ -144,8 +169,9 @@ export default {
   },
 
   mounted () {
+
     wx.showToast({
-      title: '当前为演示模式，数据仅作为展示之用',
+      title: '当前为演示模式，数据仅作为展示之用。点击最新投票或最火投票可以实际使用',
       icon: 'none',
       duration: 5000
     })
@@ -158,10 +184,28 @@ export default {
             this.$fly.post('/user/login?js_code=' + res.code).then(res_2 => {
               if (res_2.Status === 200) {
                 this.setSessionId(res_2.SessionId)
-                wx.showToast({
-                  title: '微信登陆成功',
-                  image: '/static/images/icon_task_done.png',
-                  duration: 2000
+
+                // 此时还需要getUserInfo，故暂时不弹框
+                // wx.showToast({
+                //   title: '微信登陆成功',
+                // })
+
+                // 获取用户信息
+                wx.getSetting({
+                  success: res_3 => {
+                    if (res_3.authSetting['scope.userInfo']) {
+                      this.isAuth_ = true
+                      this.updateUserInfo_()
+                    }
+                    else {
+                      //// damn it
+                      // wx.authorize({
+                      //   scope: 'scope.userInfo',
+                      //   success: this.updateUserInfo_
+                      // })
+                      this.isAuth_ = false
+                    }
+                  }
                 })
               }
               else {
@@ -186,7 +230,7 @@ export default {
             // TODO:图标更改
             wx.showToast({
               title: '微信登录失败',
-              image: '/static/images/icon_task_done.png',
+              image: '/static/images//icon_close.png',
               duration: 3000
             })
           }
@@ -194,7 +238,8 @@ export default {
       })
     else {
       console.log('登录成功');
-
+      this.isAuth_ = true
+      this.updateUserInfo_()
     }
   }
 }
@@ -247,6 +292,18 @@ swiper {
   width: 50rpx;
   height: 50rpx;
   right: 0;
+}
+
+.auth-tips {
+  position: fixed;
+  bottom: 0;
+  width: 750rpx;
+  height: 100rpx;
+  line-height: 50rpx;
+  background: #FAECD8;
+  color: #E6A23C;
+  font-size: 14px;
+  padding: 10rpx 50rpx;
 }
 
 

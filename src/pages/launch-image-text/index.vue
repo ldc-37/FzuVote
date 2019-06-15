@@ -5,7 +5,7 @@
     </div>
 
     <div class="whole-info border-top-gray">
-      <description typeNameCN="投票"></description>
+      <description typeNameCN="投票" @update="title = $event.title; desc = $event.desc"></description>
     </div>
 
     <div class="one-part border-top-gray">
@@ -46,16 +46,16 @@
         <span class="large-text">多选设定</span>
         <switch :checked="setMulti" color="#0086F1" @change="setMulti = !setMulti"></switch>
       </div>
-      <div class="one-line">
+      <div class="one-line" v-if="setMulti">
         <span class="mid-text font-gray">最少选择选项</span>
-        <picker mode="selector" :range="[1, 2, 3, 4, 5]" :disabled="!setMulti" @change="changePicker([1, 2, 3, 4, 5], 'minOptionNum', $event)" class="times-picker">
+        <picker mode="selector" :range="[1, 2, 3, 4, 5]" @change="changePicker([1, 2, 3, 4, 5], 'minOptionNum', $event)" class="times-picker">
           <span class="font-gray">{{minOptionNum}}个</span>
           <img src="/static/images/icon_down.png" class="icon-25 icon-down">
         </picker>
       </div>
-      <div class="one-line">
+      <div class="one-line" v-if="setMulti">
         <span class="mid-text font-gray">最多选择选项</span>
-        <picker mode="selector" :range="[6, 7, 8, 9, '不限']" :disabled="!setMulti" @change="changePicker([6, 7, 8, 9, '不限'], 'maxOptionNum', $event)" class="times-picker">
+        <picker mode="selector" :range="[6, 7, 8, 9, '不限']" @change="changePicker([6, 7, 8, 9, '不限'], 'maxOptionNum', $event)" class="times-picker">
           <span class="font-gray">{{maxOptionNum}}个</span>
           <img src="/static/images/icon_down.png" class="icon-25 icon-down">
         </picker>
@@ -148,6 +148,25 @@ export default {
       })
     },
     async publish() {
+      const isEmptyBlank = () => {
+        let hasEmpty = false
+        this.teams.forEach(item => {
+          if (item.name.trim() === '') {
+            hasEmpty = true
+          }
+        })
+        if (hasEmpty) {
+          return true
+        }
+        return false
+      }
+      if (!this.title.trim() || isEmptyBlank()) {
+        wx.showToast({
+          title: '请先将内容填写完整',
+          icon: 'none'
+        })
+        return false
+      }
       this.btnLoading = true
       const Data = []
       for (let item of this.teams) {
@@ -173,20 +192,45 @@ export default {
         Anonymity: +this.anonymous.toString(),
         Data
       })
-      // if (res.Status === 200) {
-        this.btnLoading = false
-        wx.showToast({
-          title: '创建成功'
+      this.btnLoading = false
+      wx.showToast({
+        title: '创建成功'
+      })
+      setTimeout(() => {
+        wx.redirectTo({
+          url: '/pages/do-image-text/main?id=' + res.Data.PicvoteId
         })
-        setTimeout(() => {
-          wx.redirectTo({
-            url: '/pages/do-image-text/main?id=' + res.Data.PicvoteId
-          })
-        }, 1000);
-      // }
-    //   else {
-    //     throw new Error(res.Status)
-    //   }
+      }, 1000);
+    },
+    clear_() {
+      this.$data = {
+        title: '',
+        desc: '',
+        imagesId: [],
+        teams: [
+          {
+            name: '',
+            image: '',
+            imageId: '',
+            desc: ''
+          },
+        ],
+        maxVoteNum: 1,
+        setMulti: false,
+        minOptionNum: 1,
+        maxOptionNum: '不限',
+        voteTime: {},
+        showInGround: true,
+        anonymous: false,
+
+        btnLoading: false,
+      }
+    },
+    save_() {
+
+    },
+    restore_() {
+
     }
   },
 

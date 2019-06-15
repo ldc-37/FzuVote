@@ -1,3 +1,8 @@
+<!--
+功能：上传并预览图片
+参数：limit: Number  最大上传数量
+事件：update  更新图片ID数组
+-->
 <template>
   <div class="image-uploader">
     <swiper
@@ -7,7 +12,7 @@
       @change="handleSwiperChange"
     >
       <swiper-item v-for="(item, index) in imageFiles" :item-id="index" :key="index">
-        <img :src="item" class="swiper-image" @click="previewImage">
+        <img :src="item" class="swiper-image" mode="center" @click="previewImage">
         <div class="del-image" @click="deleteImage"></div>
       </swiper-item>
       <swiper-item v-show="imageFiles.length !== limit" :item-id="imageFiles.length" @click="parseImage" class="add-swiper">
@@ -64,10 +69,7 @@ export default {
 </script>
 
 <style scoped>
-/* .image-uploader {
-  width: 100%;
-  height: 100%;
-} */
+
 swiper {
   height: 220rpx;
 }

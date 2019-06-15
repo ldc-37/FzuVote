@@ -37,14 +37,14 @@
       </div>
       <div class="one-line" v-if="setMulti">
         <span class="mid-text font-gray">最少选择选项</span>
-        <picker mode="selector" :range="[1, 2, 3, 4, 5]" :disabled="!setMulti" @change="changePicker([1, 2, 3, 4, 5], 'minOptionNum', $event)" class="times-picker">
+        <picker mode="selector" :range="[1, 2, 3, 4, 5]" @change="changePicker([1, 2, 3, 4, 5], 'minOptionNum', $event)" class="times-picker">
           <span class="font-gray">{{minOptionNum}}个</span>
           <img src="/static/images/icon_down.png" class="icon-25 icon-down">
         </picker>
       </div>
       <div class="one-line" v-if="setMulti">
         <span class="mid-text font-gray">最多选择选项</span>
-        <picker mode="selector" :range="[6, 7, 8, 9, '不限']" :disabled="!setMulti" @change="changePicker([6, 7, 8, 9, '不限'], 'maxOptionNum', $event)" class="times-picker">
+        <picker mode="selector" :range="[6, 7, 8, 9, '不限']" @change="changePicker([6, 7, 8, 9, '不限'], 'maxOptionNum', $event)" class="times-picker">
           <span class="font-gray">{{maxOptionNum}}个</span>
           <img src="/static/images/icon_down.png" class="icon-25 icon-down">
         </picker>
@@ -95,17 +95,14 @@ export default {
       this[attrName] = range[e.mp.detail.value]
     },
     async publish() {
+      if (!this.title.trim()) {
+        wx.showToast({
+          title: '请先将内容填写完整',
+          icon: 'none'
+        })
+        return false
+      }
       this.btnLoading = true
-                      console.log(this.$data)
-      // const Data = []
-      // for (let item of this.teams) {
-      //   Data.push({
-      //     Pic: item.imageId,
-      //     Name: item.name,
-      //     Describe: item.desc,
-      //     Vote: "0"
-      //   })
-      // }
       const res = await this.$net.createElection({
         SessionId: this.$store.state.sessionId,
         MasterInfo: this.hostName,

@@ -197,7 +197,7 @@ export default {
           title: '提交成功'
         })
         setTimeout(() => {
-          wx.navigateTo({
+          wx.redirectTo({
             url: '/pages/questionnaire-result/main?id=' + this.$mp.query.id
           })
         }, 1000);
@@ -218,7 +218,8 @@ export default {
   async mounted() {
     if (this.$mp.query.id) {
       const data = await this.$net.getQuestionnaire(this.$mp.query.id)
-      this.list = data
+      this.list = data.list
+      this.title = data.title
 
       wx.setNavigationBarTitle({
         title: this.title

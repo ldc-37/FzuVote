@@ -1,7 +1,13 @@
+<!--
+功能：展示图文模式卡片
+参数：data: Object  卡片数据
+      voting: Boolean  投票状态标志
+事件：无
+-->
 <template>
   <div class="large-vote-card">
     <div class="image-area">
-      <img :src="data.image" class="vote-img">
+      <img :src="data.image" mode="center" class="vote-img">
       <div class="vote-id">{{data.id >= 10 ? data.id : '0' + data.id}}</div>
     </div>
     <div class="info-area">
