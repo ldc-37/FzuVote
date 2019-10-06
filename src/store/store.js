@@ -14,6 +14,7 @@ const store = new Vuex.Store({
     sessionId: '',
     name: '',
     avatarUrl: '',
+    hadAuth: false,
   },
   mutations: {
     setSessionId(state, sessionId) {
@@ -25,6 +26,9 @@ const store = new Vuex.Store({
     setAvatar(state, avatarUrl) {
       state.avatarUrl = avatarUrl
     },
+    setAuth(state, hadAuth) {
+      state.hadAuth = hadAuth
+    }
   },
   actions: {
 
@@ -35,7 +39,7 @@ const store = new Vuex.Store({
     createPersistedState({
       storage: {
         getItem: key => wx.getStorageSync(key),
-        setItem: (key, value) =>wx.setStorageSync(key, value),
+        setItem: (key, value) => wx.setStorageSync(key, value),
         removeItem: key => wx.clearStorage()
       }
     })

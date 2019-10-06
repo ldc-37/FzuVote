@@ -88,6 +88,7 @@ export default {
         wx.showToast({
           title: '授权成功'
         })
+        this.$store.commit('setAuth')
         wx.getUserInfo({
           success: res => {
             var userInfo = res.userInfo
@@ -104,7 +105,7 @@ export default {
       else {
         wx.showToast({
           icon: 'none',
-          title: '已取消授权',
+          title: '已取消授权已取消',
           duration: 1000
         })
         console.warn(e.mp.detail.errMsg)

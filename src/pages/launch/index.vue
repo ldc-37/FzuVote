@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <!-- <div class="one-part" @click="navTo('../launch-questionnaire/main')"> -->
     <a class="one-part" href='../launch-image-text/main'>
       <div class="part-text">

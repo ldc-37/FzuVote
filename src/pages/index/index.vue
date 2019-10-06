@@ -40,7 +40,7 @@
         ></card>
       </div>
     </div>
-    <div class="auth-tips" @click="switchTab" v-if="!isAuth_">
+    <div class="auth-tips" @click="switchTab" v-if="!hadAuth">
       未授权个人信息，可能影响部分功能。<br>>>>点此前往授权
     </div>
   </div>
@@ -53,7 +53,6 @@ import { mapState, mapMutations } from 'vuex'
 export default {
   data () {
     return {
-      isAuth_: false,
       swiperImage: [
         {
         src: '/static/images/testlove.png',
@@ -123,8 +122,9 @@ export default {
 
   computed: {
     ...mapState([
-      'sessionId'
-    ])
+      'sessionId',
+      'hadAuth'
+    ]),
   },
 
   methods: {
@@ -132,6 +132,7 @@ export default {
       'setSessionId',
       'setName',
       'setAvatar',
+      'setAuth'
     ]),
     updateUserInfo_() {
       wx.getUserInfo({
@@ -157,6 +158,10 @@ export default {
       wx.switchTab({
         url: '/pages/me/main'
       })
+      wx.showToast({
+        icon: 'none',
+        title: '请点击“同步微信资料”'
+      })
     },
     async changeTab(state) {
       this.tabState = state
@@ -169,13 +174,13 @@ export default {
   },
 
   mounted () {
-
     wx.showToast({
       title: '当前为演示模式，数据仅作为展示之用。点击最新投票或最火投票可以实际使用',
       icon: 'none',
       duration: 5000
     })
-    if (!this.sessionId)
+    // if (!this.sessionId)
+    if (!this.hadAuth)
       wx.login({
         success: (res) => {
           if (res.code) {
@@ -194,7 +199,7 @@ export default {
                 wx.getSetting({
                   success: res_3 => {
                     if (res_3.authSetting['scope.userInfo']) {
-                      this.isAuth_ = true
+                      this.setAuth(true)
                       this.updateUserInfo_()
                     }
                     else {
@@ -203,7 +208,7 @@ export default {
                       //   scope: 'scope.userInfo',
                       //   success: this.updateUserInfo_
                       // })
-                      this.isAuth_ = false
+                      this.setAuth(false)
                     }
                   }
                 })
@@ -218,7 +223,6 @@ export default {
               }
             }).catch(err => {
               console.log(err)
-              // TODO:图标更改
               wx.showToast({
                 title: '服务端登录失败',
                 image: '/static/images/icon_close.png',
@@ -227,7 +231,6 @@ export default {
             })
           }
           else {
-            // TODO:图标更改
             wx.showToast({
               title: '微信登录失败',
               image: '/static/images//icon_close.png',
@@ -238,10 +241,13 @@ export default {
       })
     else {
       console.log('登录成功');
-      this.isAuth_ = true
+      this.setAuth(true)
       this.updateUserInfo_()
     }
-  }
+  },
+  onShow() {
+    console.warn(this.hadAuth)
+  },
 }
 </script>
 
