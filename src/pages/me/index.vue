@@ -14,8 +14,8 @@
       </div>
     </div>
     <div class="l-body">
-      <div @click="navTo('../vote-history/main?from=参与投票')" class="personal-numbers">
-        <div class="number-group">
+      <div class="personal-numbers">
+        <div @click="navTo('../vote-history/main?from=参与投票')" class="number-group">
           <span class="number">{{ userData.voteNum }}</span>
           <span class="number-desc">参与投票</span>
         </div>
