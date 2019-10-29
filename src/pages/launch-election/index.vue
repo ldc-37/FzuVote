@@ -1,11 +1,11 @@
 <template>
   <div class="launch-election">
     <div class="uploader">
-      <uploader :limit="5" @update="imagesId = $event"></uploader>
+      <uploader :limit="5" @update="imagesId = $event" :initImages="imagesId"></uploader>
     </div>
 
     <div class="whole-info border-top-gray">
-      <description typeNameCN="" @update="title = $event.title; desc = $event.desc"></description>
+      <description typeNameCN="" @update="title = $event.title; desc = $event.desc" :initTitle="title" :initDesc="desc"></description>
     </div>
 
     <div class="one-part border-top-gray">
@@ -80,16 +80,18 @@ export default {
       setMulti: false,
       minOptionNum: 1,
       maxOptionNum: '不限',
-      signupTime: {},
-      voteTime: {},
+      signupTime: {}, //此项不存为草稿
+      voteTime: {}, //此项不存为草稿
       showInGround: true,
 
       btnLoading: false,
     }
   },
+
   computed: {
     maxVoteNumArr: () => [...Array(5).keys()].map(item => item + 1),
   },
+
   methods: {
     changePicker(range, attrName, e) {
       this[attrName] = range[e.mp.detail.value]
@@ -128,13 +130,59 @@ export default {
           url: '/pages/do-election/main?id=' + res.Data.Election_id
         })
       }, 1000);
+    },
+    save_() {
+      // voteTime, signupTime不存为草稿
+      const draft = this.$data
+      delete draft.voteTime
+      delete draft.signupTime
+      const hasValidInput = () => {
+        if (draft.title || draft.desc || draft.hostName || draft.imagesId.length) {
+          return true
+        }
+        if (draft.maxVoteNum !== 1 || draft.minOptionNum !== 1 || draft.maxOptionNum !== '不限' || !draft.showInGround) {
+          return true
+        }
+        return false
+      }
+      if (hasValidInput()) {
+        this.$store.commit('setDraftOfLaunch', {
+          type: 'election',
+          data: draft
+        })
+      } else {
+        this.$store.commit('setDraftOfLaunch', {
+          type: 'election',
+          data: {}
+        })
+      }
+    },
+    restore_() {
+      if (Object.keys(this.$store.state.draftOfLaunch.election).length) {
+        mpvue.showToast({
+          icon: 'loading',
+          title: '正在恢复草稿...'
+        })
+        // Object.assign是浅拷贝，会拷贝可枚举成员及其get/set函数
+        Object.assign(this.$data, JSON.parse(JSON.stringify(this.$store.state.draftOfLaunch.election)))
+      }
     }
   },
+
   components: {
     uploader,
     description,
     duration
-  }
+  },
+
+  destroyed() {
+    // TODO: 仅此处在save时判断有效性，其他在restore时判断
+    this.save_()
+  },
+
+  created() {
+    this.restore_()
+  },
 }
 </script>
 

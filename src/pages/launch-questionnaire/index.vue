@@ -1,7 +1,8 @@
+<!-- latest -->
 <template>
   <div class="launch-questionnaire">
     <div class="uploader">
-      <uploader :limit="1" @update="imagesId = $event"></uploader>
+      <uploader :limit="1" @update="imagesId = $event" :initImages="imagesId"></uploader>
     </div>
 
     <div class="whole-info border-top-gray">
@@ -68,7 +69,7 @@ export default {
           imgUrl: '',
         },
       ],
-      voteTime: {},
+      voteTime: {}, // 此项不存为草稿
 
       showInGround: true,
 
@@ -170,8 +171,75 @@ export default {
           url: '/pages/do-questionnaire/main?id=' + res.Data.Questionnaire
         })
       }, 1000);
-    }
+    },
+    save_() {
+      // voteTime不存为草稿
+      const draft = this.$data
+      delete draft.voteTime
+      delete draft.btnLoading
+      this.$store.commit('setDraftOfLaunch', {
+        type: 'questionnaire',
+        data: draft
+      })
+    },
+    restore_() {
+      // if (Object.keys(this.$store.state.draftOfLaunch.questionnaire).length) {
+      //   mpvue.showToast({
+      //     icon: 'loading',
+      //     title: '正在恢复草稿...'
+      //   })
+      //   // Object.assign是浅拷贝，会拷贝可枚举成员及其get/set函数
+      //   Object.assign(this.$data, JSON.parse(JSON.stringify(this.$store.state.draftOfLaunch.questionnaire)))
+      // }
 
+      const hasValidInput = () => {
+        // 检查保存的内容是否与默认值不同，fxxking wxmp
+        const data = this.$store.state.draftOfLaunch.questionnaire
+        if (!Object.keys(data).length) {
+          return false
+        }
+        if (data.title || data.desc || this.imagesId.length || this.qlist.length !== 2) {
+          return true
+        }
+        let t = false
+        data.qlist.forEach((item) => {
+          if (item.question || item.imgUrl || item.answers.length !== 3) {
+            t = true
+          }
+          item.answers.forEach((subItem) => {
+            t = t || subItem
+          })
+        })
+        return t
+      }
+      if (hasValidInput()) {
+        // // TODO: 询问是否需要恢复草稿
+        // mpvue.showModel({
+        //   title: '恢复提示',
+        //   content: '是否恢复上次未提交的内容？',
+        //   success(confirm) {
+        //     if (confirm) {
+
+        //     }
+        //   }
+        // })
+        mpvue.showToast({
+          icon: 'loading',
+          title: '正在恢复内容...'
+        })
+        // Object.assign是浅拷贝，会拷贝可枚举成员及其get/set函数
+        Object.assign(this.$data, JSON.parse(JSON.stringify(this.$store.state.draftOfLaunch.questionnaire)))
+        // TODO:  提交成功后清理store
+      }
+    }
+  },
+
+  destroyed() {
+    this.save_()
+  },
+
+  created() {
+    this.restore_()
   },
 }
 </script>

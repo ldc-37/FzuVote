@@ -1,11 +1,11 @@
 <template>
   <div class="launch-image-text">
     <div class="uploader">
-      <uploader limit="5" @update="imagesId = $event"></uploader>
+      <uploader :limit="5" @update="imagesId = $event" :initImages="imagesId"></uploader>
     </div>
 
     <div class="whole-info border-top-gray">
-      <description typeNameCN="投票" @update="title = $event.title; desc = $event.desc"></description>
+      <description typeNameCN="投票" @update="title = $event.title; desc = $event.desc" :initTitle="title" :initDesc="desc"></description>
     </div>
 
     <div class="one-part border-top-gray">
@@ -103,7 +103,7 @@ export default {
       setMulti: false,
       minOptionNum: 1,
       maxOptionNum: '不限',
-      voteTime: {},
+      voteTime: {}, // 此项不保存为草稿
       showInGround: true,
       anonymous: false,
 
@@ -202,35 +202,57 @@ export default {
         })
       }, 1000);
     },
-    clear_() {
-      this.$data = {
-        title: '',
-        desc: '',
-        imagesId: [],
-        teams: [
-          {
-            name: '',
-            image: '',
-            imageId: '',
-            desc: ''
-          },
-        ],
-        maxVoteNum: 1,
-        setMulti: false,
-        minOptionNum: 1,
-        maxOptionNum: '不限',
-        voteTime: {},
-        showInGround: true,
-        anonymous: false,
-
-        btnLoading: false,
-      }
-    },
     save_() {
-
+      // voteTime不存为草稿
+      const draft = this.$data
+      delete draft.voteTime
+      delete draft.btnLoading
+      this.$store.commit('setDraftOfLaunch', {
+        type: 'imageText',
+        data: draft
+      })
     },
     restore_() {
+      const hasValidInput = () => {
+        // 这里只检查了部分项目
+        const data = this.$store.state.draftOfLaunch.imageText
+        if (!Object.keys(data).length) {
+          return false
+        }
+        if (data.title || data.desc || this.imagesId.length || this.teams.length > 1) {
+          return true
+        }
+        if (!data.teams) {
+          return false
+        }
+        if (data.teams.length === 0) {
+          return false
+        }
+        let t = false
+        Object.values(data.teams[0]).forEach(item => {
+          if (!t && (item !== '')) t = true
+        })
+        return t
+      }
+      if (hasValidInput()) {
+        // // TODO: 询问是否需要恢复草稿
+        // mpvue.showModel({
+        //   title: '恢复提示',
+        //   content: '是否恢复上次未提交的内容？',
+        //   success(confirm) {
+        //     if (confirm) {
 
+        //     }
+        //   }
+        // })
+        mpvue.showToast({
+          icon: 'loading',
+          title: '正在恢复内容...'
+        })
+        // Object.assign是浅拷贝，会拷贝可枚举成员及其get/set函数
+        Object.assign(this.$data, JSON.parse(JSON.stringify(this.$store.state.draftOfLaunch.imageText)))
+        // TODO:  提交成功后清理store
+      }
     }
   },
 
@@ -238,6 +260,14 @@ export default {
     uploader,
     description,
     duration
+  },
+
+  destroyed() {
+    this.save_()
+  },
+
+  created() {
+    this.restore_()
   },
 }
 </script>

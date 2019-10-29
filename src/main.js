@@ -30,3 +30,8 @@ fly.interceptors.response.use(res => {
 })
 fly.config.baseURL = 'https://sugarchl.top/api'
 
+Vue.config.errorHandler = function (err) {
+  if (console && console.error) {
+    console.error(err)
+  }
+}

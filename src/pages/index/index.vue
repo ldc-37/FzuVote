@@ -135,7 +135,7 @@ export default {
       'setAuth'
     ]),
     updateUserInfo_() {
-      wx.getUserInfo({
+      mpvue.getUserInfo({
         success: res => {
           var userInfo = res.userInfo
           var nickName = userInfo.nickName
@@ -150,38 +150,38 @@ export default {
       })
     },
     navToSearch() {
-      wx.navigateTo({
+      mpvue.navigateTo({
         url: '/pages/search/main'
       })
     },
     switchTab() {
-      wx.switchTab({
+      mpvue.switchTab({
         url: '/pages/me/main'
       })
-      wx.showToast({
+      mpvue.showToast({
         icon: 'none',
         title: '请点击“同步微信资料”'
       })
     },
     async changeTab(state) {
       this.tabState = state
-      wx.showLoading({
+      mpvue.showLoading({
         title: '加载中'
       })
       this.votes = state === 0 ? await this.$net.getLatest() : await this.$net.getHottest()
-      wx.hideLoading()
+      mpvue.hideLoading()
     }
   },
 
   mounted () {
-    wx.showToast({
+    mpvue.showToast({
       title: '当前为演示模式，数据仅作为展示之用。点击最新投票或最火投票可以实际使用',
       icon: 'none',
       duration: 5000
     })
     // if (!this.sessionId)
     if (!this.hadAuth)
-      wx.login({
+      mpvue.login({
         success: (res) => {
           if (res.code) {
             console.log('获取token成功：' + res.code)
@@ -191,12 +191,12 @@ export default {
                 this.setSessionId(res_2.SessionId)
 
                 // 此时还需要getUserInfo，故暂时不弹框
-                // wx.showToast({
+                // mpvue.showToast({
                 //   title: '微信登陆成功',
                 // })
 
                 // 获取用户信息
-                wx.getSetting({
+                mpvue.getSetting({
                   success: res_3 => {
                     if (res_3.authSetting['scope.userInfo']) {
                       this.setAuth(true)
@@ -204,7 +204,7 @@ export default {
                     }
                     else {
                       //// damn it
-                      // wx.authorize({
+                      // mpvue.authorize({
                       //   scope: 'scope.userInfo',
                       //   success: this.updateUserInfo_
                       // })
@@ -215,7 +215,7 @@ export default {
               }
               else {
                 console.error(res_2)
-                wx.showToast({
+                mpvue.showToast({
                   title: '服务端登录失败',
                   image: '/static/images/icon_close.png',
                   duration: 3000
@@ -223,7 +223,7 @@ export default {
               }
             }).catch(err => {
               console.log(err)
-              wx.showToast({
+              mpvue.showToast({
                 title: '服务端登录失败',
                 image: '/static/images/icon_close.png',
                 duration: 3000
@@ -231,7 +231,7 @@ export default {
             })
           }
           else {
-            wx.showToast({
+            mpvue.showToast({
               title: '微信登录失败',
               image: '/static/images//icon_close.png',
               duration: 3000

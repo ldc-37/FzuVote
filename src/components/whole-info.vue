@@ -15,11 +15,11 @@
 
 <script>
 export default {
-  props: ['typeNameCN'],
+  props: ['typeNameCN', 'initTitle', 'initDesc'],
   data() {
     return {
-      title: '',
-      desc: ''
+      title: this.initTitle,
+      desc: this.initDesc
     }
   },
   methods: {
@@ -28,7 +28,7 @@ export default {
         ...this.$data
       })
     }
-  },
+  }
 }
 </script>
 

@@ -15,6 +15,11 @@ const store = new Vuex.Store({
     name: '',
     avatarUrl: '',
     hadAuth: false,
+    draftOfLaunch: {
+      election: {},
+      imageText: {},
+      questionnaire: {}
+    }
   },
   mutations: {
     setSessionId(state, sessionId) {
@@ -28,6 +33,14 @@ const store = new Vuex.Store({
     },
     setAuth(state, hadAuth) {
       state.hadAuth = hadAuth
+    },
+    setDraftOfLaunch(state, payload) {
+      // // string不可这样用
+      // if (!(payload.type in ['election', 'imageText', 'questionnaire'])) {
+      //   console.warn('>>>>>>>>>>>>>setDraftOfLaunch()使用有误：' + payload.type)
+      //   return
+      // }
+      state.draftOfLaunch[payload.type] = payload.data
     }
   },
   actions: {

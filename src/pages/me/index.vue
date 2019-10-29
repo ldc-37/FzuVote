@@ -88,7 +88,7 @@ export default {
         wx.showToast({
           title: '授权成功'
         })
-        this.$store.commit('setAuth')
+        this.$store.commit('setAuth', true)
         wx.getUserInfo({
           success: res => {
             var userInfo = res.userInfo
