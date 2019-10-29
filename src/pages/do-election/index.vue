@@ -107,55 +107,26 @@ export default {
     return {
       showBox: false,
       swiperState: 0,
-      swiperImage: [
-        '/static/images/testsinger.png',
-        '/static/images/testsinger.png',
-        '/static/images/testsinger.png',
-      ],
+      swiperImage: [],
       statistic: {
-        signed: 129,
-        voted: 989,
-        visited: 2101,
+        signed: 0,
+        voted: 0,
+        visited: 0,
         leftTime: {}
       },
       searchWord: '',
       tabState: 0,
       voteInfo: {
-        host: '中国大学',
-        title: '中国大学最具人气歌手评比',
-        maxVoteTimes: 3,
-        voteTimeStart: '2019-06-22 10:00',
-        voteTimeEnd: '2019-06-24 10:00',
-        signupTimeStart: '2019-06-22 10:00',
-        signupTimeEnd: '2019-06-24 10:00',
-        desc: '记得支持你最喜欢的歌手哦！！！'
+        host: '',
+        title: '',
+        maxVoteTimes: 1,
+        voteTimeStart: '',
+        voteTimeEnd: '',
+        signupTimeStart: '',
+        signupTimeEnd: '',
+        desc: ''
       },
-      voteData: [
-        {
-          id: 1,
-          name: '金炫雅',
-          image: '/static/images/test/jxy.jpg',
-          vote: 900,
-        },
-        {
-          id: 3,
-          name: '柳岩',
-          image: '/static/images/test/ly.jpg',
-          vote: 98,
-        },
-        {
-          id: 9,
-          name: '泰勒',
-          image: '/static/images/test/tl.jpg',
-          vote: 99,
-        },
-        {
-          id: 10,
-          name: '周笔畅',
-          image: '/static/images/test/zbc.jpg',
-          vote: 90,
-        },
-      ]
+      voteData: []
 
     }
   },

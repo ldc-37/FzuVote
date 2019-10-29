@@ -77,42 +77,7 @@ export default {
       ],
       swiperState: 0,
       tabState: 0,
-      votes: [
-        {
-          id: '',
-          type: 'Election',
-          title: '中国大学最具人气歌手评比',
-          imgSrc: '/static/images/testsinger.png',
-          creator: '评选模式',
-          joinNum: '466',
-          voteNum: '520',
-          endTime: '2019-05-31 22:11',
-          userState: 1,
-        },
-        {
-          id: '',
-          type: 'Questionnaire',
-          title: '2019国产手机用户体验调查',
-          imgSrc: '/static/images/testphone.png',
-          creator: '问卷模式',
-          joinNum: '85',
-          voteNum: '123',
-          endTime: '2019-06-30 00:00',
-          userState: 0,
-        },
-        {
-          id: '',
-          type: 'Picvote',
-          title: '你最喜欢的口红是哪一种？',
-          imgSrc: '/static/images/testkh.png',
-          creator: '图文模式',
-          joinNum: '1123',
-          voteNum: '1502',
-          endTime: '2019-06-05 12:22',
-          userState: 1,
-        },
-
-      ],
+      votes: [],
     }
   },
 
@@ -174,11 +139,6 @@ export default {
   },
 
   mounted () {
-    mpvue.showToast({
-      title: '当前为演示模式，数据仅作为展示之用。点击最新投票或最火投票可以实际使用',
-      icon: 'none',
-      duration: 5000
-    })
     // if (!this.sessionId)
     if (!this.hadAuth)
       mpvue.login({
@@ -244,9 +204,10 @@ export default {
       this.setAuth(true)
       this.updateUserInfo_()
     }
+    this.changeTab(0)
   },
   onShow() {
-    console.warn(this.hadAuth)
+    // console.warn(this.hadAuth)
   },
 }
 </script>

@@ -76,11 +76,7 @@ export default {
       // @该属性对应功能需要完善
       isVoting: true,
       swiperState: 0,
-      swiperImage: [
-        '/static/images/testkh.png',
-        '/static/images/testkh.png',
-        '/static/images/testkh.png',
-      ],
+      swiperImage: [],
       statistic: {
         signed: 29,
         voted: 389,
@@ -91,33 +87,16 @@ export default {
       searchWord: '',
       nowSelectId: -1,
       voteInfo: {
-        host: '不知名的路人',
-        title: '你最喜欢的口红是哪一种？',
+        host: '---',
+        title: '---',
         maxVoteTimes: 3,
-        voteTimeStart: '2019-06-22 10:00',
-        voteTimeEnd: '2019-06-26 10:00',
+        voteTimeStart: '',
+        voteTimeEnd: '',
         // signupTimeStart: '2019-06-22 10:00',
         // signupTimeEnd: '2019-06-26 10:00',
-        desc: '请在下方投票选出你最喜欢的口红种类，最多可以选择两项，谢谢！'
+        desc: '---'
       },
-      voteData: [
-        {
-          id: 1,
-          name: 'Dior',
-          desc: '克里斯汀·迪奥（英语：Christian Dior），简称迪奥（Dior），是法国著名时尚消费品牌',
-          image: '/static/images/test/kh1.jpg',
-          Num: 56,
-          Voted: false,
-        },
-        {
-          id: 2,
-          name: 'M·A·C',
-          desc: '是雅诗兰黛化妆品集团旗下第一个非由兰黛夫人自创的品牌',
-          image: '/static/images/test/kh2.jpg',
-          Num: 68,
-          Voted: false,
-        },
-      ],
+      voteData: [],
       btnLoading: false,
     }
   },

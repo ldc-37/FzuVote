@@ -1,6 +1,7 @@
 <template>
   <div>
       <card :infoData="data" v-for="(data, index) in results" :key="index"></card>
+      <div class="empty-history">您的记录为空</div>
   </div>
 </template>
 
@@ -10,19 +11,7 @@ import card from '@/components/card'
 export default {
   data() {
     return {
-      results: [
-        {
-          id: 321,
-          type: 'Election',
-          title: '关于谁应该请吃饭的投票',
-          imgSrc: '/static/images/testbg.jpg',
-          creator: '评选模式',
-          joinNum: '23',
-          voteNum: '123',
-          endTime: '2019-05-30 22:22',
-          userState: 1,
-        },
-      ]
+      results: []
     }
   },
 
@@ -49,5 +38,8 @@ export default {
 </script>
 
 <style scoped>
-
+.empty-history {
+  margin-top: 200px;
+  text-align: center;
+}
 </style>

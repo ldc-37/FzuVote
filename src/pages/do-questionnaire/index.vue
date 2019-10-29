@@ -42,77 +42,10 @@ export default {
     return {
       topArr: [],
 
-      title: '2019国产手机用户体验调查',
+      title: '',
       nowQuestion: 1,
       nowChecked: [],
-      list: [
-        {
-          question: '你最喜欢的国产手机是？',
-          limit: 1,
-          options: [
-            '华为',
-            '小米',
-            'OPPO',
-            'OnePlus',
-            '魅族'
-          ]
-        },
-        {
-          question: '你觉得哪个手机最好用？',
-          limit: 2,
-          options: [
-            '华为 P30 Pro',
-            '小米9 Pro',
-            'OPPO Reno',
-            'OnePlus 7Pro',
-            '魅族 16'
-          ]
-        },
-        {
-          question: '你能接受什么价位的国产手机？',
-          limit: 1,
-          options: [
-            '0 - 1000',
-            '1000 - 2000',
-            '2000 - 3000',
-            '3000 - 4000',
-            '大于4000'
-          ]
-        },
-        {
-          question: '你买过哪些品牌的手机？',
-          limit: 5,
-          options: [
-            '华为',
-            '小米',
-            'OPPO',
-            'OnePlus',
-            '魅族'
-          ]
-        },
-        {
-          question: '你的下一款手机最有可能是：',
-          limit: 1,
-          options: [
-            '华为',
-            '小米',
-            'OPPO',
-            'OnePlus',
-            '魅族'
-          ]
-        },
-        {
-          question: '如果你愿意，请告知你的学历：',
-          limit: 1,
-          options: [
-            '专科',
-            '本科',
-            '硕士',
-            '博士',
-            '其他/不愿透露'
-          ]
-        },
-      ],
+      list: [],
       answers: [],
       btnLoading: false,
     }

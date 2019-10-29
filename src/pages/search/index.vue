@@ -4,8 +4,10 @@
       <input type="text" class="search-input" v-model.lazy="searchWord">
       <img src="/static/images/icon_search2.png" class="icon-40" @click="search">
     </div>
+    <div class="empty-result" v-show="!searchWord">请输入搜索关键词</div>
     <div class="result">
       <card :infoData="item" v-for="(item, index) in resultList" :key="index"></card>
+      <div class="empty-result" v-show="isResultEmpty">没有搜索到结果</div>
     </div>
   </div>
 </template>
@@ -17,25 +19,15 @@ export default {
   data() {
     return {
       searchWord: '',
-      resultList: [
-        {
-          id: 321,
-          type: 'Election',
-          title: '关于谁应该请吃饭的投票',
-          imgSrc: '/static/images/testbg.jpg',
-          creator: '评选模式',
-          joinNum: '23',
-          voteNum: '123',
-          endTime: '2019-05-30 22:22',
-          userState: 1,
-        },
-      ]
+      resultList: [],
+      isResultEmpty: false
     }
   },
 
   methods: {
     async search() {
       this.resultList = await this.$net.search(this.searchWord)
+      this.isResultEmpty = this.resultList.length ? false : true
     }
   },
 
@@ -62,6 +54,13 @@ export default {
   border-radius: 20px;
   font-size: 14px;
   box-sizing: border-box;
+}
+
+.empty-result {
+  margin-top: 100px;
+  color: #999;
+  text-align: center;
+  font-size: 14px;
 }
 
 </style>
