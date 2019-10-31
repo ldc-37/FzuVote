@@ -51,9 +51,9 @@ const store = new Vuex.Store({
     createLogger(),
     createPersistedState({
       storage: {
-        getItem: key => wx.getStorageSync(key),
-        setItem: (key, value) => wx.setStorageSync(key, value),
-        removeItem: key => wx.clearStorage()
+        getItem: key => mpvue.getStorageSync(key),
+        setItem: (key, value) => mpvue.setStorageSync(key, value),
+        removeItem: key => mpvue.clearStorage()
       }
     })
   ]

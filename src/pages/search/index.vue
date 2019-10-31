@@ -26,8 +26,11 @@ export default {
 
   methods: {
     async search() {
+      console.log(this.resultList);
       this.resultList = await this.$net.search(this.searchWord)
-      this.isResultEmpty = this.resultList.length ? false : true
+      console.log(this.resultList);
+
+      this.isResultEmpty = !this.resultList.length
     }
   },
 

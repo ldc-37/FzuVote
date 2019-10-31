@@ -49,13 +49,15 @@
     </div>
 
     <div class="search" v-if="!showBox">
-      <input type="text" class="search-input" v-model.lazy="searchWord" placeholder="搜索编号/名字">
-      <img src="/static/images/icon_search2.png" class="icon-40" @click="search">
+      <input type="text" class="search-input" v-model="searchWord" placeholder="搜索编号/名字">
+      <img src="/static/images/icon_search2.png" v-if="pastSearchWord !== searchWord" class="icon-40" @click="search">
+      <img src="/static/images/icon_close_blue.png" v-else class="icon-40" @click="clearSearch">
     </div>
 
     <radio-group @change="changeRatio">
-      <card :data="item" :voting="isVoting" v-for="(item, index) in voteData" :key="index"></card></card>
+      <card :data="item" :voting="isVoting" v-for="(item, index) in showingVoteData" :key="index"></card>
     </radio-group>
+    <div class="empty-result">没有找到结果 T_T</div>
 
     <div class="btn-area">
       <button class="btn" hover-class="btn-hover" :disabled="nowSelectId < 0 || !isVoting" :loading="btnLoading" @click="vote">投票</button>
@@ -78,25 +80,27 @@ export default {
       swiperState: 0,
       swiperImage: [],
       statistic: {
-        signed: 29,
-        voted: 389,
-        visited: 1101,
+        signed: 0,
+        voted: 0,
+        visited: 0,
         // mount时生成
         leftTime: {}
       },
       searchWord: '',
+      pastSearchWord: 'a_word_that_impossible_appeared',
       nowSelectId: -1,
       voteInfo: {
         host: '---',
         title: '---',
-        maxVoteTimes: 3,
+        maxVoteTimes: '-',
         voteTimeStart: '',
         voteTimeEnd: '',
         // signupTimeStart: '2019-06-22 10:00',
         // signupTimeEnd: '2019-06-26 10:00',
-        desc: '---'
+        desc: '------'
       },
       voteData: [],
+      showingVoteData: [],
       btnLoading: false,
     }
   },
@@ -106,12 +110,35 @@ export default {
       this.nowSelectId = +e.mp.detail.value
     },
     search() {
-      wx.showLoading({
-        title: '搜索中'
+      // mpvue.showLoading({
+      //   title: '搜索中'
+      // })
+      if (this.searchWord.trim() === '') {
+        mpvue.showToast({
+          title: '请输入有效内容',
+          icon: 'none',
+          time: 1000
+        })
+        return
+      }
+      const ret = []
+      this.voteData.forEach((item) => {
+        if (item.title.indexOf(this.searchWord) !== -1) {
+          ret.push(item)
+        } else if (item.id.toString() === this.searchWord) {
+          // id匹配的放到前面
+          ret.unshift(item)
+        }
       })
-      setTimeout(() => {
-        wx.hideLoading()
-      }, 1000);
+      this.showingVoteData = ret
+      this.pastSearchWord = this.searchWord
+      // setTimeout(() => {
+      //   mpvue.hideLoading()
+      // }, 1000);
+    },
+    clearSearch() {
+      this.showingVoteData = this.voteData
+      this.searchWord = ''
     },
     async vote() {
       this.btnLoading = true
@@ -126,7 +153,7 @@ export default {
       this.btnLoading = false
       if (res.Status === 200) {
         this.isVoting = false
-        wx.showToast({
+        mpvue.showToast({
           title: '投票成功'
         })
       }
@@ -135,7 +162,7 @@ export default {
       }
     },
     previewImage(e){
-      wx.previewImage({
+      mpvue.previewImage({
         current: e.mp.detail.current,
         urls: this.swiperImage
       })
@@ -150,7 +177,7 @@ export default {
       this.voteInfo = data.voteInfo
       this.voteData = data.voteData
 
-      wx.setNavigationBarTitle({
+      mpvue.setNavigationBarTitle({
         title: this.voteInfo.title
       })
       this.statistic.leftTime = util.getRemainTime(new Date(data.voteInfo.voteTimeEnd).valueOf())
@@ -159,11 +186,7 @@ export default {
       }, 1000)
     }
     else {
-      this.statistic.leftTime = util.getRemainTime(new Date(2019, 6-1, 16).valueOf())
-      const cycle = setInterval(() => {
-        this.statistic.leftTime = util.getRemainTime(new Date(2019, 6-1, 16).valueOf())
-      }, 1000)
-      console.log('当前为演示页面')
+      throw new Error('页面参数不正确！' + this.$mp.query)
     }
   },
 
@@ -255,6 +278,7 @@ swiper {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
   padding: 0 50rpx;
   margin: 60rpx 0 40rpx 0;
 }
@@ -270,6 +294,12 @@ swiper {
   box-sizing: border-box;
 }
 
+.empty-result {
+  margin-top: 50px;
+  color: #999;
+  text-align: center;
+  font-size: 14px;
+}
 
 .btn-area {
   margin-top: 100rpx;

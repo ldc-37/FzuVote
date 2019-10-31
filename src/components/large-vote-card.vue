@@ -25,7 +25,7 @@
 
 <script>
 export default {
-  // 若voting为假data中必须有票数Num和已投票该项的标志Voted
+  // 若voting为假，data中必须有票数Num和已投票该项的标志Voted
   props: {
     data: Object,
     voting: Boolean

@@ -147,7 +147,10 @@ export default {
             console.log('获取token成功：' + res.code)
             // 仅此处POST使用queryString方式
             this.$fly.post('/user/login?js_code=' + res.code).then(res_2 => {
-              if (res_2.Status === 200) {
+            /*this.$fly.post('/user/login', {
+              js_code: res.code
+            }).then(res_2 => {*/
+              if (!res_2.ErrorCode) {
                 this.setSessionId(res_2.SessionId)
 
                 // 此时还需要getUserInfo，故暂时不弹框

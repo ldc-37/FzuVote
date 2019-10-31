@@ -7,7 +7,26 @@ fly.interceptors.request.use(req => {
 })
 fly.interceptors.response.use(res => {
   console.info(res)
+  const code = res.data.ErrorCode
+  if (code) {
+    console.log(`错误码：${code}\n错误信息：${ErrorTips(code)}`)
+    mpvue.showModel({
+      title: '服务器报错',
+      content: `错误码：${code}\n错误信息：${ErrorTips(code)}`,
+      showCancel: false
+    })
+    // 需要后续处理出错，此处似乎不能reject
+    // return Promise.reject(response)
+  }
   return res.data
+}, error => {
+  if (error.toString().includes('timeout')) {
+    mpvue.showToast({
+      title: '网络超时，请重启小程序或稍后再试。',
+      icon: 'none'
+    })
+  }
+  return Promise.reject(error)
 })
 fly.config.baseURL = 'https://sugarchl.top/api'
 // fly.config.baseURL = ''
@@ -17,8 +36,8 @@ const SessionId = () => store.state.sessionId
 
 const network = {
   async getLatest() {
-    const res = await fly.get('/common/latest')
-    if (res.Status === 200) {
+    const res = await fly.get('/latest')
+    if (!res.ErrorCode) {
       const data = []
       for (let item of res.Data) {
         let typeCN
@@ -42,12 +61,12 @@ const network = {
       return data
     }
     else {
-      throw new Error(res.Status)
+      throw new Error(res.ErrorCode)
     }
   },
   async getHottest() {
-    const res = await fly.get('/common/hotest')
-    if (res.Status === 200) {
+    const res = await fly.get('/hotest')
+    if (!res.ErrorCode) {
       const data = []
       for (let item of res.Data) {
         let typeCN
@@ -71,12 +90,12 @@ const network = {
       return data
     }
     else {
-      throw new Error(res.Status)
+      throw new Error(res.ErrorCode)
     }
   },
   async search(word) {
-    const res = await fly.get('/common/search/' + word)
-    if (res.Status === 200) {
+    const res = await fly.get('/search?keyword=' + word)
+    if (!res.ErrorCode) {
       const data = []
       for (let item of res.Data) {
         let typeCN
@@ -99,21 +118,19 @@ const network = {
       }
       return data
     }
-    else {
-      throw new Error(res.Status)
-    }
+    return res.ErrorCode
   },
-  // 图文模式
+  /////////////// 图文模式
   async createImageText(data) {
     const res = await fly.post('/picvote/new', data)
-    if (res.Status !== 200) {
-      throw new Error(res.Status)
+    if (!res.ErrorCode) {
+      return res
     }
-    return res
+    return res.ErrorCode
   },
   async getImageText(id) {
-    const res = await fly.get('/picvote/get/' + SessionId() + '/' + id)
-    if (res.Status === 200) {
+    const res = await fly.get(`/picvote?id=${id}&session_id=${SessionId()}`)
+    if (!res.ErrorCode) {
       // 注意空字符串数组、三目运算符与布尔值之间的关系
       const swiperImage = +res.Data.SharePic
           ? res.Data.SharePic.map(item => fly.config.baseURL + '/common/pic/' + item)
@@ -154,24 +171,22 @@ const network = {
       }
       return data
     }
-    else {
-      throw new Error(res.Status)
-    }
+    return res.ErrorCode
   },
   async voteImageText(data) {
     return await fly.post('/picvote/vote', data)
   },
-  // 评选模式
+  /////////////// 评选模式
   async createElection(data) {
     const res = await fly.post('/election/new', data)
-    if (res.Status !== 200) {
-      throw new Error(res.Status)
+    if (!res.ErrorCode) {
+      return res
     }
-    return res
+    return res.ErrorCode
   },
   async getElection(id) {
-    const res = await fly.get('/election/get/' + SessionId() + '/' + id)
-    if (res.Status === 200) {
+    const res = await fly.get(`/election?id=${id}&session_id=${SessionId()}`)
+    if (!res.ErrorCode) {
       // 注意空字符串数组、三目运算符与布尔值之间的关系
       const swiperImage = +res.Data.SharePic
           ? res.Data.SharePic.map(item => fly.config.baseURL + '/common/pic/' + item)
@@ -213,34 +228,32 @@ const network = {
       }
       return data
     }
-    else {
-      throw new Error(res.Status)
-    }
+    return res.ErrorCode
   },
   async voteElection(data) {
     const res = await fly.post('/election/vote', data)
-    if (res.Status !== 200) {
-      throw new Error(res.Status)
+    if (res.ErrorCode) {
+      return res.ErrorCode
     }
   },
   async joinElection(data) {
-    const res = await fly.post('election/join', data)
-    if (res.Status !== 200) {
-      throw new Error(res.Status)
+    const res = await fly.post('election/apply', data)
+    if (res.ErrorCode) {
+      return res.ErrorCode
     }
   },
-  // 问卷模式
+  /////////////// 问卷模式
   async createQuestionnaire(data) {
     const res = await fly.post('questionnaire/new', data)
-    if (res.Status !== 200) {
-      throw new Error(res.Status)
+    if (!res.ErrorCode) {
+      return res
     }
-    return res
+    return res.ErrorCode
   },
   async getQuestionnaire(id) {
-    const res = await fly.get('questionnaire/get_title/' + SessionId() + '/' + id)
-    if (res.Status !== 200) {
-      throw new Error(res.Status)
+    const res = await fly.get(`/questionnaire?id=${id}&session_id=${SessionId()}`)
+    if (res.ErrorCode) {
+      return res.ErrorCode
     }
     const list = []
     for (let question of res.Data) {
@@ -258,8 +271,8 @@ const network = {
   },
   async getQuestionnaireResult(id) {
     const res = await fly.get('/questionnaire/get/' + SessionId() + '/' + id)
-    if (res.Status !== 200) {
-      throw new Error(res.Status)
+    if (res.ErrorCode) {
+      return res.ErrorCode
     }
     const data = []
     let order = 1
@@ -281,17 +294,17 @@ const network = {
   },
   async voteQuestionnaire(data) {
     const res = await fly.post('/questionnaire/vote/', data)
-    if (res.Status !== 200) {
-      throw new Error(res.Status)
+    if (!res.ErrorCode) {
+      return res
     }
-    return res
+    return res.ErrorCode
   },
 
 
   // 用户信息
   async getUserStat(sid) {
-    const res = await fly.get('/user/info/' + sid)
-    if (res.Status === 200) {
+    const res = await fly.get('/user/info?session_id=' + sid)
+    if (!res.ErrorCode) {
       const data = {
         voteNum: res.Data.Joined_vote,
         launchNum: res.Data.Built_vote,
@@ -299,13 +312,12 @@ const network = {
       }
       return data
     }
-    else {
-      throw new Error(res.Status)
-    }
+    return res.ErrorCode
   },
+  // TODO:未合并
   async getUserActivity(sid, type) {
     const res = await fly.get(`/user/get/${sid}/${type}`)
-    if (res.Status === 200) {
+    if (!res.ErrorCode) {
       const data = []
       for (let item of res.Data) {
         let typeCN
@@ -328,10 +340,23 @@ const network = {
       }
       return data
     }
-    else {
-      throw new Error(res.Status)
-    }
+    return res.ErrorCode
   }
 }
 
 export default network
+
+function ErrorTips(code) {
+  switch (code.toString()) {
+    case '40001': return '数据库错误'
+    case '40002': return '数据格式错误'
+    case '40011': return '腾讯的锅'
+    case '40020': return '用户不存在'
+    case '40100': return '该活动ID不存在'
+    case '40200': return '活动设置不合理，比如 开始投票时间>=结束投票时间'
+    case '40210': return '重复投票'
+    case '40220': return '不在活动时间内，投票时间早于开始投票时间，晚于结束投票时间'
+    // 此处throw Error无人catch= =
+    default: console.error('Invalid ErrorTips() param')
+  }
+}

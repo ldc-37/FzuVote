@@ -183,13 +183,13 @@ export default {
         Describe: this.desc,
         BeginTime: `${this.voteTime.startDate} ${this.voteTime.startTime}:00`,
         EndTime: `${this.voteTime.endDate} ${this.voteTime.endTime}:00`,
-        IsPublic: +this.showInGround.toString(),
+        // IsPublic: +this.showInGround.toString(),
         SharePic: this.imagesId,
         MostVoteADay: this.maxVoteNum.toString(),
-        IsMultipleChoice: +this.setMulti.toString(),
+        // IsMultipleChoice: +this.setMulti.toString(),
         LeastChoice: this.minOptionNum.toString(),
         MostChoice: this.maxVoteNum.toString(),
-        Anonymity: +this.anonymous.toString(),
+        // Anonymity: +this.anonymous.toString(),
         Data
       })
       this.btnLoading = false
