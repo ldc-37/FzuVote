@@ -171,10 +171,10 @@ export default {
       const Data = []
       for (let item of this.teams) {
         Data.push({
-          Pic: item.imageId,
-          Name: item.name,
+          Pic: item.imageId || undefined,
+          Title: item.name,
           Describe: item.desc,
-          Vote: "0"
+          // Vote: "0"
         })
       }
       const res = await this.$net.createImageText({
@@ -241,14 +241,14 @@ export default {
         //   content: '是否恢复上次未提交的内容？',
         //   success(confirm) {
         //     if (confirm) {
-
+                mpvue.showToast({
+                  icon: 'loading',
+                  title: '正在恢复内容...'
+                })
         //     }
         //   }
         // })
-        mpvue.showToast({
-          icon: 'loading',
-          title: '正在恢复内容...'
-        })
+
         // Object.assign是浅拷贝，会拷贝可枚举成员及其get/set函数
         Object.assign(this.$data, JSON.parse(JSON.stringify(this.$store.state.draftOfLaunch.imageText)))
         // TODO:  提交成功后清理store

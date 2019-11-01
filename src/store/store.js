@@ -53,7 +53,9 @@ const store = new Vuex.Store({
       storage: {
         getItem: key => mpvue.getStorageSync(key),
         setItem: (key, value) => mpvue.setStorageSync(key, value),
-        removeItem: key => mpvue.clearStorage()
+        // removeItem: key => mpvue.clearStorage()
+        // 据https://juejin.im/post/5aa782db5188255574595ea4 小程序启动时会自动调用removeItem
+        removeItem: key => {}
       }
     })
   ]

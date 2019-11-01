@@ -26,10 +26,7 @@ export default {
 
   methods: {
     async search() {
-      console.log(this.resultList);
       this.resultList = await this.$net.search(this.searchWord)
-      console.log(this.resultList);
-
       this.isResultEmpty = !this.resultList.length
     }
   },

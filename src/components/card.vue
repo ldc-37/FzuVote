@@ -41,13 +41,13 @@ export default {
     navToVote() {
       let url
       switch (this.infoData.type) {
-        case 'Election':
+        case 'election':
           url = '/pages/do-election/main'
           break
-        case 'Questionnaire':
+        case 'questionnaire':
           url = '/pages/do-questionnaire/main'
           break
-        case 'Picvote':
+        case 'picvote':
           url = '/pages/do-image-text/main'
           break
         default:

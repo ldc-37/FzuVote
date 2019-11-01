@@ -6,7 +6,7 @@
     </div>
 
     <div class="whole-info border-top-gray">
-      <description typeNameCN="问卷" @update="title = $event.title; desc = $event.desc"></description>
+      <description typeNameCN="问卷" @update="title = $event.title; desc = $event.desc":initTitle="title" :initDesc="desc"></description>
     </div>
 
     <div class="question-list border-top-gray">
@@ -94,6 +94,7 @@ export default {
       })
     },
     handleDelete(e) {
+      console.log(e)
       if (this.qlist.length > 1) {
         this.qlist.splice(e.order - 1, 1)
       }
@@ -103,7 +104,6 @@ export default {
           icon: 'none'
         })
       }
-
     },
     handleAdd() {
       this.qlist.push({
@@ -183,15 +183,6 @@ export default {
       })
     },
     restore_() {
-      // if (Object.keys(this.$store.state.draftOfLaunch.questionnaire).length) {
-      //   mpvue.showToast({
-      //     icon: 'loading',
-      //     title: '正在恢复草稿...'
-      //   })
-      //   // Object.assign是浅拷贝，会拷贝可枚举成员及其get/set函数
-      //   Object.assign(this.$data, JSON.parse(JSON.stringify(this.$store.state.draftOfLaunch.questionnaire)))
-      // }
-
       const hasValidInput = () => {
         // 检查保存的内容是否与默认值不同，fxxking wxmp
         const data = this.$store.state.draftOfLaunch.questionnaire
@@ -219,14 +210,14 @@ export default {
         //   content: '是否恢复上次未提交的内容？',
         //   success(confirm) {
         //     if (confirm) {
-
+          mpvue.showToast({
+            icon: 'loading',
+            title: '正在恢复内容...'
+          })
         //     }
         //   }
         // })
-        mpvue.showToast({
-          icon: 'loading',
-          title: '正在恢复内容...'
-        })
+
         // Object.assign是浅拷贝，会拷贝可枚举成员及其get/set函数
         Object.assign(this.$data, JSON.parse(JSON.stringify(this.$store.state.draftOfLaunch.questionnaire)))
         // TODO:  提交成功后清理store

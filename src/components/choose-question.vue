@@ -78,7 +78,8 @@ export default {
         success: result => {
           if (result.confirm) {
             this.$emit('delete', {
-              order: this.copyData.order
+              // order: this.copyData.order
+              order: this.order
             })
           }
         }

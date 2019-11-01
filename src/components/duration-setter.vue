@@ -48,6 +48,14 @@ export default {
       const dd = date.getDate() >= 10 ? date.getDate() : '0' + date.getDate()
       return `${yyyy}-${mm}-${dd}`
     },
+    tomorrowDate: () => {
+      const date = new Date()
+      date.setDate(date.getDate() + 1)
+      const yyyy = date.getFullYear()
+      const mm = date.getMonth() + 1 >= 10 ? date.getMonth() + 1 : '0' + (date.getMonth() + 1)
+      const dd = date.getDate() >= 10 ? date.getDate() : '0' + date.getDate()
+      return `${yyyy}-${mm}-${dd}`
+    },
     nowTime: () => new Date().toTimeString().substr(0, 5),
   },
   methods: {
@@ -63,7 +71,7 @@ export default {
   mounted() {
     this.startDate = this.nowDate
     this.startTime = this.nowTime
-    this.endDate = this.nowDate
+    this.endDate = this.tomorrowDate
     this.endTime = this.nowTime
 
     this.$emit('create', {

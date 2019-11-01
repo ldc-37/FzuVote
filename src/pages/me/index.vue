@@ -57,9 +57,9 @@ export default {
   data() {
     return {
       userData: {
-        voteNum: 1,
-        launchNum: 1,
-        prizeNum: 0,
+        voteNum: '-',
+        launchNum: '-',
+        prizeNum: '-',
       }
     }
   },
@@ -98,15 +98,14 @@ export default {
             this.setName(nickName)
             this.setAvatar(avatarUrl)
 
-            this.$forceUpdate()
+            // this.$forceUpdate()
           }
         })
       }
       else {
         wx.showToast({
           icon: 'none',
-          title: '已取消授权已取消',
-          duration: 1000
+          title: '授权被取消',
         })
         console.warn(e.mp.detail.errMsg)
       }

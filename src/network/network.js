@@ -41,20 +41,20 @@ const network = {
       const data = []
       for (let item of res.Data) {
         let typeCN
-        switch (item.Type) {
-          case 'Election': typeCN = '评选模式'; break;
-          case 'Questionnaire': typeCN = '问卷模式'; break;
-          case 'Picvote': typeCN = '图文模式'; break;
-          default: throw new Error('ERROR type:' + item.Type)
+        switch (item.ActivityType) {
+          case 'election': typeCN = '评选模式'; break;
+          case 'questionnaire': typeCN = '问卷模式'; break;
+          case 'picvote': typeCN = '图文模式'; break;
+          default: console.error('ERROR type:' + item.ActivityType)
         }
         data.push({
-          id: item.Id,
-          type: item.Type,
+          id: item.ActivityId,
+          type: item.ActivityType,
           title: item.Title || '未命名',
-          imgSrc: item.Pic[0] ? item.Pic[0] : '/static/images/no-pic.gif',
+          imgSrc: item.SharePic[0] || '/static/images/no-pic.gif',
           creator: typeCN,
-          joinNum: item.JoinedNumber,
-          voteNum: item.VotedNumber,
+          joinNum: item.AllParticipantNumber,
+          voteNum: item.AllPollNumber,
           endTime: item.EndTime,
         })
       }
@@ -70,20 +70,20 @@ const network = {
       const data = []
       for (let item of res.Data) {
         let typeCN
-        switch (item.Type) {
-          case 'Election': typeCN = '评选模式'; break;
-          case 'Questionnaire': typeCN = '问卷模式'; break;
-          case 'Picvote': typeCN = '图文模式'; break;
-          default: throw new Error('ERROR type:' + item.Type)
+        switch (item.ActivityType) {
+          case 'election': typeCN = '评选模式'; break;
+          case 'questionnaire': typeCN = '问卷模式'; break;
+          case 'picvote': typeCN = '图文模式'; break;
+          default: console.error('ERROR type:' + item.ActivityType)
         }
         data.push({
-          id: item.Id,
-          type: item.Type,
+          id: item.ActivityId,
+          type: item.ActivityType,
           title: item.Title || '未命名',
-          imgSrc: item.Pic[0] ? item.Pic[0] : '/static/images/no-pic.gif',
+          imgSrc: item.SharePic[0] || '/static/images/no-pic.gif',
           creator: typeCN,
-          joinNum: item.JoinedNumber,
-          voteNum: item.VotedNumber,
+          joinNum: item.AllParticipantNumber,
+          voteNum: item.AllPollNumber,
           endTime: item.EndTime,
         })
       }
@@ -99,21 +99,22 @@ const network = {
       const data = []
       for (let item of res.Data) {
         let typeCN
-        switch (item.Type) {
-          case 'Election': typeCN = '评选模式'; break;
-          case 'Questionnaire': typeCN = '问卷模式'; break;
-          case 'Picvote': typeCN = '图文模式'; break;
-          default: throw new Error('ERROR type:' + item.type)
+        switch (item.ActivityType) {
+          case 'election': typeCN = '评选模式'; break;
+          case 'questionnaire': typeCN = '问卷模式'; break;
+          case 'picvote': typeCN = '图文模式'; break;
+          default: console.error('ERROR type:' + item.type)
         }
         data.push({
-          id: item.Id,
-          type: item.Type,
+          id: item.ActivityId,
+          type: item.ActivityType,
           title: item.Title,
-          imgSrc: item.Pic ? item.Pic[0] : '',
+          imgSrc: item.SharePic[0] || '',
           creator: typeCN,
-          joinNum: item.JoinedNumber,
-          voteNum: item.JoinedNumber,
+          joinNum: item.AllParticipantNumber,
+          voteNum: item.AllPollNumber,
           endTime: item.EndTime,
+          // ?: BeginTime
         })
       }
       return data
@@ -136,9 +137,9 @@ const network = {
           ? res.Data.SharePic.map(item => fly.config.baseURL + '/common/pic/' + item)
           : ['/static/images/no-pic.gif']
       const statistic = {
-        signed: res.Data.JoinedNumber,
-        // @需修改
-        voted: res.Data.VotedNumber || res.Data.JoinedNumber,
+        signed: res.Data.AllParticipantNumber,
+        // TODO: 需修改
+        voted: res.Data.AllPollNumber || res.Data.AllParticipantNumber,
         visited: res.Data.PageView,
         leftTime: {}
       }
@@ -158,7 +159,7 @@ const network = {
           id: +item.ID,
           name: item.Name || "暂无姓名",
           desc: item.Describe || "暂无介绍",
-          image: item.Pic ? fly.config.baseURL + '/common/pic/' + item.Pic : '/static/images/no-pic.gif',
+          image: item.SharePic ? `${fly.config.baseURL}/common/pic/${item.SharePic}` : '/static/images/no-pic.gif',
           Num: +item.Vote,
           Voted: false
         })
@@ -192,9 +193,9 @@ const network = {
           ? res.Data.SharePic.map(item => fly.config.baseURL + '/common/pic/' + item)
           : ['/static/images/no-pic.gif']
       const statistic = {
-        signed: res.Data.JoinedNumber,
+        signed: res.Data.AllParticipantNumber,
         // @需修改
-        voted: res.Data.VotedNumber || res.Data.JoinedNumber,
+        voted: res.Data.AllPollNumber || res.Data.AllParticipantNumber,
         visited: res.Data.PageView,
         leftTime: {}
       }
@@ -215,7 +216,7 @@ const network = {
           id: +item.ID,
           name: item.Name || "暂无姓名",
           desc: item.Describe || "暂无介绍",
-          image: item.Pic ? fly.config.baseURL + '/common/pic/' + item.Pic : '/static/images/no-pic.gif',
+          image: item.SharePic ? fly.config.baseURL + '/common/pic/' + item.SharePic : '/static/images/no-pic.gif',
           vote: +item.Vote,
           // Voted: false
         })
@@ -314,27 +315,27 @@ const network = {
     }
     return res.ErrorCode
   },
-  // TODO:未合并
+  // TODO:未调整
   async getUserActivity(sid, type) {
     const res = await fly.get(`/user/get/${sid}/${type}`)
     if (!res.ErrorCode) {
       const data = []
       for (let item of res.Data) {
         let typeCN
-        switch (item.Type) {
-          case 'Election': typeCN = '评选模式'; break;
-          case 'Questionnaire': typeCN = '问卷模式'; break;
-          case 'Picvote': typeCN = '图文模式'; break;
-          default: throw new Error('ERROR type:' + item.Type)
+        switch (item.ActivityType) {
+          case 'election': typeCN = '评选模式'; break;
+          case 'questionnaire': typeCN = '问卷模式'; break;
+          case 'picvote': typeCN = '图文模式'; break;
+          default: console.error('ERROR type:' + item.ActivityType)
         }
         data.push({
-          id: item.Id,
-          type: item.Type,
+          id: item.ActivityId,
+          type: item.ActivityType,
           title: item.Title,
-          imgSrc: item.Pic ? item.Pic[0] : '',
+          imgSrc: item.SharePic[0] || '',
           creator: typeCN,
-          joinNum: item.JoinedNumber,
-          voteNum: item.VotedNumber,
+          joinNum: item.AllParticipantNumber,
+          voteNum: item.AllPollNumber,
           endTime: item.EndTime,
         })
       }
