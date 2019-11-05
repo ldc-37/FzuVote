@@ -183,18 +183,23 @@ export default {
         Describe: this.desc,
         BeginTime: `${this.voteTime.startDate} ${this.voteTime.startTime}:00`,
         EndTime: `${this.voteTime.endDate} ${this.voteTime.endTime}:00`,
-        // IsPublic: +this.showInGround.toString(),
+        IsPublic: +this.showInGround,
         SharePic: this.imagesId,
-        MostVoteADay: this.maxVoteNum.toString(),
+        MostVoteADay: this.maxVoteNum,
         // IsMultipleChoice: +this.setMulti.toString(),
-        LeastChoice: this.minOptionNum.toString(),
-        MostChoice: this.maxVoteNum.toString(),
-        // Anonymity: +this.anonymous.toString(),
+        LeastChoice: this.minOptionNum,
+        MostChoice: this.maxVoteNum,
+        IsAnonymity: +this.anonymous,
         Data
       })
       this.btnLoading = false
+      // if (res === ???)
       wx.showToast({
         title: '创建成功'
+      })
+      this.$store.commit('setDraftOfLaunch', {
+        type: 'imageText',
+        data: {}
       })
       setTimeout(() => {
         wx.redirectTo({
@@ -245,13 +250,17 @@ export default {
                   icon: 'loading',
                   title: '正在恢复内容...'
                 })
-        //     }
+        //     } else {
+        //         this.$store.commit('setDraftOfLaunch', {
+        //           type: 'imageText',
+        //           data: {}
+        //         })
+        // }
         //   }
         // })
 
         // Object.assign是浅拷贝，会拷贝可枚举成员及其get/set函数
         Object.assign(this.$data, JSON.parse(JSON.stringify(this.$store.state.draftOfLaunch.imageText)))
-        // TODO:  提交成功后清理store
       }
     }
   },

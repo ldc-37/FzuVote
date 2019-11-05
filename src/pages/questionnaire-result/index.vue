@@ -22,18 +22,18 @@ export default {
     return {
       title: '我是问卷标题',
       data: [
-        {
-          order: 1,
-          title: "去哪里吃饭",
-          options: ["食堂", "外卖", "不吃"],
-          num: [1, 2, 5]
-        },
-        {
-          order: 2,
-          title: "吃啥",
-          options: ["1", "2"],
-          num: [1, 2]
-        }
+        // {
+        //   order: 1,
+        //   title: "去哪里吃饭",
+        //   options: ["食堂", "外卖", "不吃"],
+        //   num: [1, 2, 5]
+        // },
+        // {
+        //   order: 2,
+        //   title: "吃啥",
+        //   options: ["1", "2"],
+        //   num: [1, 2]
+        // }
       ],
       numCN: ['一', '二', '三', '四', '五', '六', '七', '八', '九'],
     };
@@ -50,7 +50,7 @@ export default {
       })
     }
     else {
-      console.log('当前为演示页面')
+      console.warn('缺失Id')
     }
   },
 };

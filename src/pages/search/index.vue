@@ -26,8 +26,16 @@ export default {
 
   methods: {
     async search() {
-      this.resultList = await this.$net.search(this.searchWord)
-      this.isResultEmpty = !this.resultList.length
+      if (this.resultList) {
+        this.resultList = await this.$net.search(this.searchWord)
+        this.isResultEmpty = !this.resultList.length
+      } else {
+        mpvue.showToast({
+          icon: 'none',
+          title: '请输入搜索内容',
+          time: 1000
+        })
+      }
     }
   },
 

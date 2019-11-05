@@ -7,10 +7,12 @@
     </div>
     <div class="body">
       <div class="question">
+      <!-- <div class="question" v-if="list[nowQuestion - 1]"> -->
         <p class="question-text huge-text">
-          {{list[nowQuestion - 1].question}}
-          <span class="question-type small-text" v-if="list[nowQuestion - 1].limit === 1">单选</span>
-          <span class="question-type small-text" v-else>最多{{list[nowQuestion - 1].limit}}项</span>
+          <!-- 防止初始时数组为空报错，也可以外面套v-if -->
+          {{list[nowQuestion - 1] && list[nowQuestion - 1].question}}
+          <span class="question-type small-text" v-if="list[nowQuestion - 1] && (list[nowQuestion - 1].limit === 1)">单选</span>
+          <span class="question-type small-text" v-else>最多{{list[nowQuestion - 1] && list[nowQuestion - 1].limit}}项</span>
         </p>
       </div>
 
@@ -18,7 +20,7 @@
         <radio-group v-if="list[nowQuestion - 1].limit === 1" @change="doSelect" v-for="(item, qindex) in list" :key="qindex">
           <div class="answer-line" v-if="nowQuestion === qindex + 1" v-for="(option, aindex) in item.options" :key="aindex">
             <span class="option-text">{{aindex + 1}}.  {{option}}</span>
-            <radio color="#0086F1" :value="aindex + 1"  />
+            <radio color="#0086F1" :value="aindex + 1" />
           </div>
         </radio-group>
         <checkbox-group v-if="list[nowQuestion - 1].limit > 1" @change="doSelect" v-for="(item, qindex2) in list" :key="qindex2">
@@ -46,7 +48,7 @@ export default {
       nowQuestion: 1,
       nowChecked: [],
       list: [],
-      answers: [],
+      answers: [], // 每一个答案的序号，应该从1开始
       btnLoading: false,
     }
   },
@@ -115,14 +117,14 @@ export default {
           // }
           Vote.push({
             Title: this.list[i].question,
-            // Answers
-            Answers: this.list[i].options[this.answers[i][0] - 1]
+            // Answers为答案文本的数组，TODO: 目前假设全部单选
+            Answers: [this.list[i].options[this.answers[i][0] - 1]]
           })
         }
         const data = {
           SessionId: this.$store.state.sessionId,
           Vote,
-          Questionnaire_id: this.$mp.query.id
+          QuestionnaireId: +this.$mp.query.id
         }
         const res = await this.$net.voteQuestionnaire(data)
         this.btnLoading = false
@@ -160,7 +162,7 @@ export default {
       this.topArr = [...Array(Math.min(5, this.list.length)).keys()].map(item => item + 1)
     }
     else {
-      console.log('当前为演示页面')
+      console.warn('缺失id')
     }
   },
 }

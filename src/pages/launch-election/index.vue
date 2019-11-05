@@ -122,12 +122,17 @@ export default {
         MostChoice: this.maxVoteNum,
       })
       this.btnLoading = false
+      // if (res === ???)
       wx.showToast({
         title: '创建成功'
       })
+      this.$store.commit('setDraftOfLaunch', {
+        type: 'election',
+        data: {}
+      })
       setTimeout(() => {
         wx.redirectTo({
-          url: '/pages/do-election/main?id=' + res.Data.Election_id
+          url: '/pages/do-election/main?id=' + res.Data.ElectionId
         })
       }, 1000);
     },
@@ -159,10 +164,23 @@ export default {
     },
     restore_() {
       if (Object.keys(this.$store.state.draftOfLaunch.election).length) {
-        mpvue.showToast({
-          icon: 'loading',
-          title: '正在恢复草稿...'
-        })
+        // mpvue.showModel({
+        //   title: '恢复提示',
+        //   content: '是否恢复上次未提交的内容？',
+        //   success(confirm) {
+        //     if (confirm) {
+                mpvue.showToast({
+                  icon: 'loading',
+                  title: '正在恢复内容...'
+                })
+            // } else {
+                  // this.$store.commit('setDraftOfLaunch', {
+                  //   type: 'election',
+                  //   data: {}
+                  // })
+            // }
+          // }
+        // })
         // Object.assign是浅拷贝，会拷贝可枚举成员及其get/set函数
         Object.assign(this.$data, JSON.parse(JSON.stringify(this.$store.state.draftOfLaunch.election)))
       }

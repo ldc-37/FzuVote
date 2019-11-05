@@ -133,13 +133,12 @@ const network = {
     const res = await fly.get(`/picvote?id=${id}&session_id=${SessionId()}`)
     if (!res.ErrorCode) {
       // 注意空字符串数组、三目运算符与布尔值之间的关系
-      const swiperImage = +res.Data.SharePic
-          ? res.Data.SharePic.map(item => fly.config.baseURL + '/common/pic/' + item)
+      const swiperImage = res.Data.SharePic[0]
+          ? res.Data.SharePic
           : ['/static/images/no-pic.gif']
       const statistic = {
-        signed: res.Data.AllParticipantNumber,
-        // TODO: 需修改
-        voted: res.Data.AllPollNumber || res.Data.AllParticipantNumber,
+        signed: res.Data.AllJoinedNumber,
+        voted: res.Data.AllPollNumber,
         visited: res.Data.PageView,
         leftTime: {}
       }
@@ -156,12 +155,12 @@ const network = {
       const voteData = []
       for (let item of res.Data.Data) {
         voteData.push({
-          id: +item.ID,
-          name: item.Name || "暂无姓名",
+          id: +item.SId,
+          name: item.Title || "暂无姓名",
           desc: item.Describe || "暂无介绍",
-          image: item.SharePic ? `${fly.config.baseURL}/common/pic/${item.SharePic}` : '/static/images/no-pic.gif',
-          Num: +item.Vote,
-          Voted: false
+          image: item.Pic || '/static/images/no-pic.gif',
+          Num: +item.Poll,
+          // Voted: false
         })
       }
       const data = {
@@ -189,16 +188,16 @@ const network = {
     const res = await fly.get(`/election?id=${id}&session_id=${SessionId()}`)
     if (!res.ErrorCode) {
       // 注意空字符串数组、三目运算符与布尔值之间的关系
-      const swiperImage = +res.Data.SharePic
-          ? res.Data.SharePic.map(item => fly.config.baseURL + '/common/pic/' + item)
+      const swiperImage = res.Data.SharePic[0]
+          ? res.Data.SharePic
           : ['/static/images/no-pic.gif']
       const statistic = {
-        signed: res.Data.AllParticipantNumber,
-        // @需修改
-        voted: res.Data.AllPollNumber || res.Data.AllParticipantNumber,
+        signed: res.Data.AllJoinedNumber,
+        voted: res.Data.AllPollNumber,
         visited: res.Data.PageView,
         leftTime: {}
       }
+      ////////////////////////////////TODO: 缺少一类时间
       const voteInfo = {
         host: res.Data.MasterInfo || '未填写',
         title: res.Data.Title || '未命名',
@@ -209,15 +208,14 @@ const network = {
         signupTimeEnd: res.Data.EndApplyTime.substr(0, res.Data.EndApplyTime.length - 3),
       }
       const voteData = []
-      // let tmpid = 1
-      for (let item of res.Data.JoinedUser || []) {
+      for (let item of res.Data.Data || []) {
         voteData.push({
-          // id: +item.ID || tmpid++,
-          id: +item.ID,
-          name: item.Name || "暂无姓名",
+          id: +item.SId,
+          name: item.Title || "暂无姓名",
           desc: item.Describe || "暂无介绍",
-          image: item.SharePic ? fly.config.baseURL + '/common/pic/' + item.SharePic : '/static/images/no-pic.gif',
-          vote: +item.Vote,
+          image: item.Pic || '/static/images/no-pic.gif',
+          /////////////////////////////////////TODO: 这个Poll是状态还是计数
+          vote: +item.Poll,
           // Voted: false
         })
       }
@@ -257,12 +255,12 @@ const network = {
       return res.ErrorCode
     }
     const list = []
-    for (let question of res.Data) {
+    for (let question of res.Questionnaire) {
       list.push({
-        question: question[0],
-        // @临时限制
-        limit: 1,
-        options: question.slice(1, question.length)
+        question: question.Title,
+        limit: 1, // @临时限制
+        // Option是二维数组，第二维的第二个元素在未做题时始终为-1，故过滤掉
+        options: question.Options.map(item => item[0])
       })
     }
     return {
@@ -271,21 +269,29 @@ const network = {
     }
   },
   async getQuestionnaireResult(id) {
-    const res = await fly.get('/questionnaire/get/' + SessionId() + '/' + id)
+    const res = await fly.get(`/questionnaire?id=${id}&session_id=${SessionId()}`)
     if (res.ErrorCode) {
       return res.ErrorCode
     }
     const data = []
-    let order = 1
-    for (let item of res.Data.Questionnaire) {
+    // let order = 1
+    // for (let item of res.Data.Questionnaire) {
+    //   data.push({
+    //     order: order++,
+    //     title: item.Title,
+    //     // @临时方案
+    //     options: Object.keys(item.Answers),
+    //     num: Object.values(item.Answers)
+    //   })
+    // }
+    res.Data.Questionnaire.forEach((item, index) => {
       data.push({
-        order: order++,
+        order: index + 1,
         title: item.Title,
-        // @临时方案
-        options: Object.keys(item.Answers),
-        num: Object.values(item.Answers)
+        options: item.Options.map(arr => arr[0]),
+        num: item.Options.map(arr => arr[1])
       })
-    }
+    })
     return {
       title: res.Data.Title,
       data,
@@ -307,17 +313,17 @@ const network = {
     const res = await fly.get('/user/info?session_id=' + sid)
     if (!res.ErrorCode) {
       const data = {
-        voteNum: res.Data.Joined_vote,
-        launchNum: res.Data.Built_vote,
-        prizeNum: res.Data.Win_history,
+        voteNum: res.Data.joined_record,
+        launchNum: res.Data.built_record,
+        prizeNum: res.Data.win_record,
       }
       return data
     }
     return res.ErrorCode
   },
-  // TODO:未调整
   async getUserActivity(sid, type) {
-    const res = await fly.get(`/user/get/${sid}/${type}`)
+    // const res = await fly.get(`/user/get/${sid}/${type}`)
+    const res = await fly.get(`/user/joined_record?session_id=${SessionId()}`)
     if (!res.ErrorCode) {
       const data = []
       for (let item of res.Data) {
@@ -334,15 +340,18 @@ const network = {
           title: item.Title,
           imgSrc: item.SharePic[0] || '',
           creator: typeCN,
-          joinNum: item.AllParticipantNumber,
-          voteNum: item.AllPollNumber,
-          endTime: item.EndTime,
+          joinNum: item.Participant,
+          voteNum: item.AllPoll,
+          endTime: item.EndVoteTime,
         })
       }
       return data
     }
     return res.ErrorCode
   }
+  // async getUserActivity() {
+  //   const res = await fly.get(`/user/joined_record?session_id=${SessionId()}`)
+  // }
 }
 
 export default network

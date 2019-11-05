@@ -155,9 +155,9 @@ export default {
         Title: this.title,
         Describe: this.desc,
         SharePic: this.imagesId,
-        Begin_time: `${this.voteTime.startDate} ${this.voteTime.startTime}:00`,
-        End_time: `${this.voteTime.endDate} ${this.voteTime.endTime}:00`,
-        Is_Public: +this.showInGround,
+        Begintime: `${this.voteTime.startDate} ${this.voteTime.startTime}:00`,
+        Endtime: `${this.voteTime.endDate} ${this.voteTime.endTime}:00`,
+        IsPublic: +this.showInGround,
         Questionnaire
       }
 
@@ -166,9 +166,13 @@ export default {
       wx.showToast({
         title: '创建成功',
       })
+      this.$store.commit('setDraftOfLaunch', {
+        type: 'questionnaire',
+        data: {}
+      })
       setTimeout(() => {
         wx.redirectTo({
-          url: '/pages/do-questionnaire/main?id=' + res.Data.Questionnaire
+          url: '/pages/do-questionnaire/main?id=' + res.Data.QuestionnaireId
         })
       }, 1000);
     },
@@ -214,13 +218,17 @@ export default {
             icon: 'loading',
             title: '正在恢复内容...'
           })
-        //     }
+        //     } else {
+          // this.$store.commit('setDraftOfLaunch', {
+          //   type: 'questionnaire',
+          //   data: {}
+          // })
+        // }
         //   }
         // })
 
         // Object.assign是浅拷贝，会拷贝可枚举成员及其get/set函数
         Object.assign(this.$data, JSON.parse(JSON.stringify(this.$store.state.draftOfLaunch.questionnaire)))
-        // TODO:  提交成功后清理store
       }
     }
   },

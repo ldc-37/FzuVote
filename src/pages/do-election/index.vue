@@ -182,7 +182,7 @@ export default {
       const data = await this.$net.getElection(this.$mp.query.id)
       this.voteInfo = data.voteInfo
       this.voteData = data.voteData
-
+      this.swiperImage = data.swiperImage
       wx.setNavigationBarTitle({
         title: this.voteInfo.title
       })
@@ -192,11 +192,7 @@ export default {
       }, 1000)
     }
     else {
-      this.statistic.leftTime = util.getRemainTime(new Date(2019, 6-1, 16).valueOf())
-      const cycle = setInterval(() => {
-        this.statistic.leftTime = util.getRemainTime(new Date(2019, 6-1, 16).valueOf())
-      }, 1000)
-      console.log('当前为演示页面')
+      console.warn('缺失Id')
     }
   },
 
