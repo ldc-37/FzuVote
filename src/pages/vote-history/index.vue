@@ -1,7 +1,7 @@
 <template>
   <div>
       <card :infoData="data" v-for="(data, index) in results" :key="index"></card>
-      <div class="empty-history">您的记录为空</div>
+      <div class="empty-history" v-if="!results.length">您的记录为空</div>
   </div>
 </template>
 

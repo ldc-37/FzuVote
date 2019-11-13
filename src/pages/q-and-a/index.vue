@@ -13,12 +13,16 @@ export default {
     return {
       questionList: [
         {
-          question: '为什么我无法投票',
-          answer: 'Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.'
+          question: '为什么我无法投票？',
+          answer: '请检查是否授权了用户登录及网络状态，如有疑问请联系开发者'
         },
         {
-          question: '为什么我无法投票',
-          answer: 'Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.'
+          question: '三种模式的区别是什么？',
+          answer: '图文模式侧重于图片+向指定参与者投票；问卷模式适合于收集其他人关于一系列问题的看法；评选模式主要用于可自主报名参与的评选'
+        },
+        {
+          question: '我还遇到了其他问题。',
+          answer: '目前FzuVote处于测试期，如果遇到这类问题请点击下方意见反馈告知我们，感谢您的理解，非常抱歉！'
         },
       ]
     }
