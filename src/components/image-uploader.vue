@@ -11,12 +11,12 @@
       :current="swiperState"
       @change="handleSwiperChange"
     >
-      <swiper-item v-for="(item, index) in imageFiles" :item-id="index" :key="index">
+      <swiper-item v-for="(item, index) in imagesUrl" :item-id="index" :key="index">
         <img :src="item" class="swiper-image" mode="center" @click="previewImage">
         <!-- TODO: 删除时如果有草稿中的图片（真实url和tmpUrl混合？）会产生异常 -->
         <!-- <div class="del-image" @click="deleteImage">×</div> -->
       </swiper-item>
-      <swiper-item v-if="imageFiles.length < limit" :item-id="imageFiles.length" @click="parseImage" class="add-swiper">
+      <swiper-item v-if="imagesUrl.length < limit" :item-id="imagesUrl.length" @click="parseImage" class="add-swiper">
         <img src="/static/images/icon_add.png" class="add-icon">
         <span>添加图片</span>
       </swiper-item>
@@ -27,7 +27,6 @@
 
 <script>
 export default {
-  // props: ['limit', 'initImages'],
   props: {
     limit: Number,
     initImages: {
@@ -38,9 +37,9 @@ export default {
   data() {
     return {
       swiperState: 0,
-      imageFiles: [],
-      // concat返回一个新数组
-      imagesId: this.initImages.concat()
+      // concat返回一个新数组，新api这里应该直接是图片url
+      imagesUrl: this.initImages.concat(),
+      // imagesId: deprecated
     }
   },
   methods: {
@@ -50,7 +49,7 @@ export default {
       this.swiperState = Math.min(e.mp.detail.current, this.limit)
     },
     parseImage(e) {
-      if (this.imageFiles.length === this.limit) {
+      if (this.imagesUrl.length === this.limit) {
         mpvue.showToast({
           title: '图片数量达到上限',
           icon: 'none'
@@ -63,15 +62,16 @@ export default {
         success: res => {
           for (let path of res.tempFilePaths) {
             wx.uploadFile({
-              url: this.$fly.config.baseURL + '/common/pic',
+              url: this.$fly.config.baseURL + '/upload?session_id=' + this.$store.state.sessionId,
               filePath: path,
               name: 'file',
               success: data => {
-                // TODO: 未成功
-                this.swiperState = Math.min(this.imageFiles.length, this.limit - 1)
-                this.imageFiles = this.imageFiles.concat(res.tempFilePaths)
-                this.imagesId.push(JSON.parse(data.data).Pic_id)
-                this.$emit('update', this.imagesId)
+                // TODO: 有问题
+                this.swiperState = Math.min(this.imagesUrl.length, this.limit - 1)
+                // this.imagesUrl = this.imagesUrl.concat(res.tempFilePaths)
+                // 这里返回的内层应该没有Data
+                this.imagesUrl.push(JSON.parse(data.data).FileUrl)
+                this.$emit('update', this.imagesUrl)
               }
             })
           }
@@ -81,24 +81,26 @@ export default {
     previewImage(e) {
       wx.previewImage({
         current: e.mp.detail.current,
-        urls: this.imageFiles
+        urls: this.imagesUrl
       })
     },
     // deleteImage() {
-    //   this.imageFiles.splice(this.swiperState, 1)
+    //   this.imagesUrl.splice(this.swiperState, 1)
     //   this.imagesId.splice(this.swiperState, 1)
     //   this.swiperState && this.swiperState--
     //   this.$emit('update', this.imagesId)
     // },
     clearImages() {
       this.swiperState = 0
-      this.imageFiles = []
-      this.imagesId = []
-      this.$emit('update', this.imagesId)
+      this.imagesUrl = []
+      // this.imagesId = []
+      this.$emit('update', this.imagesUrl)
+      // this.$emit('update', this.imagesId)
     }
   },
   created() {
-    this.imageFiles = this.imagesId.map(item => `${this.$fly.config.baseURL}/common/pic/${item}`)
+    // 无需，目前改为直接存url
+    // this.imagesUrl = this.imagesId.map(item => `${this.$fly.config.baseURL}/common/pic/${item}`)
   },
 }
 </script>

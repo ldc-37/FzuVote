@@ -6,15 +6,16 @@
         <input type="text" v-model.lazy="name">
       </div>
       <div class="one-line">
-        <span class="attr">微信号</span>
+        <!-- <span class="attr">微信号</span> -->
+        <span class="attr">手机号</span>
         <input type="text" v-model.lazy="wechatId" placeholder="仅主办方可见">
       </div>
     </div>
     <div class="one-part">
       <p class="attr-line">参赛图片</p>
       <div class="upload" @click="uploadImage">
-        <img src="/static/images/icon_add.png" v-if="!image" class="icon-add">
-        <img :src="image" v-else class="upload-image">
+        <img src="/static/images/icon_add.png" v-if="!imageUrl" class="icon-add">
+        <img :src="imageUrl" v-else class="upload-image">
       </div>
     </div>
     <div class="one-part no-border">
@@ -33,10 +34,9 @@ export default {
     return {
       name: '',
       wechatId: '',
-      image: '',
-      imageId: '',
+      // image: '',
+      imageUrl: '',
       desc: '',
-
       btnLoading: false,
     }
   },
@@ -47,13 +47,14 @@ export default {
         sizeType: ['original', 'compressed'],
         sourceType: ['album', 'camera'],
         success: res => {
-          this.image = res.tempFilePaths[0]
+          // this.image = res.tempFilePaths[0]
           wx.uploadFile({
-            url: this.$fly.config.baseURL + '/common/pic',
+            url: this.$fly.config.baseURL + '/upload?session_id=' + this.$store.state.sessionId,
             filePath: res.tempFilePaths[0],
             name: 'file',
             success: data => {
-              this.imageId = JSON.parse(data.data).Pic_id
+              // 似乎返回内层无Data项
+              this.imageUrl = JSON.parse(data.data).FileUrl
             }
           })
         }
@@ -61,21 +62,29 @@ export default {
     },
     async signup() {
       this.btnLoading = true
-      await this.$net.joinElection({
-        "Name": this.name,
-        "Pic": this.imageId,
+      const resCode = await this.$net.joinElection({
+        "Title": this.name,
+        "Pic": [this.imageUrl],
         "Describe": this.desc,
-        "ElectionId": this.$mp.query.id,
-        "WechatNumber": this.wechatId,
+        "ElectionId": +this.$mp.query.id,
+        // "WechatNumber": this.wechatId,
+        "PhoneNumber": this.wechatId,
         "SessionId": this.$store.state.sessionId,
       })
       this.btnLoading = false
-      wx.showToast({
-        title: '报名成功'
-      })
-      setTimeout(() => {
-        wx.navigateBack()
-      }, 1000);
+      if (resCode) {
+        wx.showModel({
+          title: '报名失败',
+          content: '请尝试重新申请。错误码' + resCode
+        })
+      } else {
+        wx.showToast({
+          title: '报名成功'
+        })
+        setTimeout(() => {
+          wx.navigateBack()
+        }, 1000);
+      }
     }
   },
 }

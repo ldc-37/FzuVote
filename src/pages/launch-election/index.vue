@@ -1,7 +1,7 @@
 <template>
   <div class="launch-election">
     <div class="uploader">
-      <uploader :limit="5" @update="imagesId = $event" :initImages="imagesId"></uploader>
+      <uploader :limit="5" @update="imagesUrl = $event" :initImages="imagesUrl"></uploader>
     </div>
 
     <div class="whole-info border-top-gray">
@@ -72,7 +72,7 @@ import duration from '@/components/duration-setter'
 export default {
   data() {
     return {
-      imagesId: [],
+      imagesUrl: [],
       title: '',
       desc: '',
       hostName: '',
@@ -115,14 +115,14 @@ export default {
         BeginApplyTime: `${this.signupTime.startDate} ${this.signupTime.startTime}:00`,
         EndApplyTime: `${this.signupTime.endDate} ${this.signupTime.endTime}:00`,
         IsPublic: +this.showInGround,
-        SharePic: this.imagesId,
+        SharePic: this.imagesUrl,
         MostVoteADay: this.maxVoteNum,
         IsMultipleChoice: +this.setMulti,
         LeastChoice: this.minOptionNum,
         MostChoice: this.maxVoteNum,
       })
       this.btnLoading = false
-      // if (res === ???)
+      // if (res === xxx)
       wx.showToast({
         title: '创建成功'
       })
@@ -142,7 +142,7 @@ export default {
       delete draft.voteTime
       delete draft.signupTime
       const hasValidInput = () => {
-        if (draft.title || draft.desc || draft.hostName || draft.imagesId.length) {
+        if (draft.title || draft.desc || draft.hostName || draft.imagesUrl.length) {
           return true
         }
         if (draft.maxVoteNum !== 1 || draft.minOptionNum !== 1 || draft.maxOptionNum !== '不限' || !draft.showInGround) {

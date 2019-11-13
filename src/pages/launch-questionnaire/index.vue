@@ -2,7 +2,7 @@
 <template>
   <div class="launch-questionnaire">
     <div class="uploader">
-      <uploader :limit="1" @update="imagesId = $event" :initImages="imagesId"></uploader>
+      <uploader :limit="1" @update="imagesUrl = $event" :initImages="imagesUrl"></uploader>
     </div>
 
     <div class="whole-info border-top-gray">
@@ -48,7 +48,7 @@ export default {
     return {
       title: '',
       desc: '',
-      imagesId: [],
+      imagesUrl: [],
       qlist: [
         {
           question: '',
@@ -154,7 +154,7 @@ export default {
         SessionId: this.$store.state.sessionId,
         Title: this.title,
         Describe: this.desc,
-        SharePic: this.imagesId,
+        SharePic: this.imagesUrl,
         Begintime: `${this.voteTime.startDate} ${this.voteTime.startTime}:00`,
         Endtime: `${this.voteTime.endDate} ${this.voteTime.endTime}:00`,
         IsPublic: +this.showInGround,
@@ -193,7 +193,7 @@ export default {
         if (!Object.keys(data).length) {
           return false
         }
-        if (data.title || data.desc || this.imagesId.length || this.qlist.length !== 2) {
+        if (data.title || data.desc || this.imagesUrl.length || this.qlist.length !== 2) {
           return true
         }
         let t = false

@@ -145,17 +145,17 @@ export default {
       }
     },
     async vote(id) {
-      wx.showModal({
+      mpvue.showModal({
         title: '投票确认',
         content: `确认为${id}号[${this.voteData.find(item => item.id === id).name}]投票吗？`,
         success: async res => {
           if (res.confirm) {
             await this.$net.voteElection({
-              ElectionId: this.$mp.query.id,
+              ElectionId: +this.$mp.query.id,
               SessionId: this.$store.state.sessionId,
               Vote: [id]
             })
-            wx.showToast({
+            mpvue.showToast({
               title: '投票成功'
             })
             console.log(this.voteData.find(item => item.id === id));
@@ -165,12 +165,12 @@ export default {
       })
     },
     navToSignup() {
-      wx.redirectTo({
+      mpvue.navigateTo({
         url: '/pages/join-election/main?id=' + this.$mp.query.id
       })
     },
     previewImage(e){
-      wx.previewImage({
+      mpvue.previewImage({
         current: e.mp.detail.current,
         urls: this.swiperImage
       })
@@ -183,7 +183,7 @@ export default {
       this.voteInfo = data.voteInfo
       this.voteData = data.voteData
       this.swiperImage = data.swiperImage
-      wx.setNavigationBarTitle({
+      mpvue.setNavigationBarTitle({
         title: this.voteInfo.title
       })
       this.statistic.leftTime = util.getRemainTime(new Date(data.voteInfo.voteTimeEnd).valueOf())
@@ -209,13 +209,16 @@ export default {
       path: 'pages/do-election/main',
       // imageUrl:'',
       success(shareTickets) {
-        console.info(shareTickets + '成功');
-        wx.showToast({
+        console.info(shareTickets + '成功')
+        mpvue.showToast({
           title: '转发成功'
         })
       },
       fail(res) {
-        console.log(res + '失败');
+        mpvue.showToast({
+          title: '转发失败'
+        })
+        console.log(res + '。失败')
       }
     }
   }

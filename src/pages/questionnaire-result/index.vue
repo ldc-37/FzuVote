@@ -41,13 +41,15 @@ export default {
 
   async mounted() {
     if (this.$mp.query.id) {
-      const data = await this.$net.getQuestionnaireResult(this.$mp.query.id)
-      this.title = data.title
-      this.data = data.data
+      const res = await this.$net.getQuestionnaireResult(this.$mp.query.id)
+      // if (typeof res !== 'number') {
+        this.title = res.title
+        this.data = res.data
 
-      wx.setNavigationBarTitle({
-        title: this.title
-      })
+        wx.setNavigationBarTitle({
+          title: this.title
+        })
+      // }
     }
     else {
       console.warn('缺失Id')

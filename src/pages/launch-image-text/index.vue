@@ -1,7 +1,7 @@
 <template>
   <div class="launch-image-text">
     <div class="uploader">
-      <uploader :limit="5" @update="imagesId = $event" :initImages="imagesId"></uploader>
+      <uploader :limit="5" @update="imagesUrl = $event" :initImages="imagesUrl"></uploader>
     </div>
 
     <div class="whole-info border-top-gray">
@@ -90,12 +90,12 @@ export default {
     return {
       title: '',
       desc: '',
-      imagesId: [],
+      imagesUrl: [],
       teams: [
         {
           name: '',
           image: '',
-          imageId: '',
+          imageUrl: '',
           desc: ''
         },
       ],
@@ -137,11 +137,12 @@ export default {
         success: res => {
           this.teams[index].image = res.tempFilePaths[0]
           wx.uploadFile({
-            url: this.$fly.config.baseURL + '/common/pic',
+            url: this.$fly.config.baseURL + '/upload?session_id=' + this.$store.state.sessionId,
             filePath: res.tempFilePaths[0],
             name: 'file',
             success: data => {
-              this.teams[index].imageId = JSON.parse(data.data).Pic_id
+              // 这里返回的内层应该没有Data
+              this.teams[index].imageUrl = JSON.parse(data.data).FileUrl
             }
           })
         }
@@ -171,7 +172,7 @@ export default {
       const Data = []
       for (let item of this.teams) {
         Data.push({
-          Pic: item.imageId || undefined,
+          Pic: item.imageUrl || undefined,
           Title: item.name,
           Describe: item.desc,
           // Vote: "0"
@@ -184,7 +185,7 @@ export default {
         BeginTime: `${this.voteTime.startDate} ${this.voteTime.startTime}:00`,
         EndTime: `${this.voteTime.endDate} ${this.voteTime.endTime}:00`,
         IsPublic: +this.showInGround,
-        SharePic: this.imagesId,
+        SharePic: this.imagesUrl,
         MostVoteADay: this.maxVoteNum,
         // IsMultipleChoice: +this.setMulti.toString(),
         LeastChoice: this.minOptionNum,
@@ -224,7 +225,7 @@ export default {
         if (!Object.keys(data).length) {
           return false
         }
-        if (data.title || data.desc || this.imagesId.length || this.teams.length > 1) {
+        if (data.title || data.desc || this.imagesUrl.length || this.teams.length > 1) {
           return true
         }
         if (!data.teams) {

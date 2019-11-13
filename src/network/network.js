@@ -1,4 +1,5 @@
 import store from '../store/store'
+import mpvue from 'mpvue'
 
 var Fly = require("flyio/dist/npm/wx")
 const fly = new Fly
@@ -270,21 +271,12 @@ const network = {
   },
   async getQuestionnaireResult(id) {
     const res = await fly.get(`/questionnaire?id=${id}&session_id=${SessionId()}`)
-    if (res.ErrorCode) {
-      return res.ErrorCode
-    }
-    const data = []
-    // let order = 1
-    // for (let item of res.Data.Questionnaire) {
-    //   data.push({
-    //     order: order++,
-    //     title: item.Title,
-    //     // @临时方案
-    //     options: Object.keys(item.Answers),
-    //     num: Object.values(item.Answers)
-    //   })
+    // if (res.ErrorCode) {
+    //   return res.ErrorCode
     // }
-    res.Data.Questionnaire.forEach((item, index) => {
+    const data = []
+    // 注意这里没有Data
+    res.Questionnaire.forEach((item, index) => {
       data.push({
         order: index + 1,
         title: item.Title,
@@ -293,7 +285,7 @@ const network = {
       })
     })
     return {
-      title: res.Data.Title,
+      title: res.Title,
       data,
       // begintime
       // endtime
@@ -322,7 +314,7 @@ const network = {
     return res.ErrorCode
   },
   async getUserActivity(sid, type) {
-    // const res = await fly.get(`/user/get/${sid}/${type}`)
+    // 等待后端完善
     const res = await fly.get(`/user/joined_record?session_id=${SessionId()}`)
     if (!res.ErrorCode) {
       const data = []
