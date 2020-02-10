@@ -15,21 +15,21 @@
     </div>
     <div class="l-body">
       <div class="personal-numbers">
-        <div @click="navTo('../vote-history/main?from=参与投票')" class="number-group">
+        <div @click="navTo('../vote-history/main?from=joined')" class="number-group">
           <span class="number">{{ userData.voteNum }}</span>
           <span class="number-desc">参与投票</span>
         </div>
-        <div @click="navTo('../vote-history/main?from=发起投票')" class="number-group">
+        <div @click="navTo('../vote-history/main?from=built')" class="number-group">
           <span class="number">{{ userData.launchNum }}</span>
           <span class="number-desc">发起投票</span>
         </div>
-        <div @click="navTo('../vote-history/main?from=中奖记录')" class="number-group">
+        <div @click="navTo('../vote-history/main?from=win')" class="number-group">
           <span class="number">{{ userData.prizeNum }}</span>
           <span class="number-desc">中奖记录</span>
         </div>
       </div>
       <div class="columns">
-        <a href="../vote-history/main?from=我的足迹" class="one-column">
+        <a href="../vote-history/main?from=history" class="one-column">
           <span class="column-text">我的足迹</span>
           <img class="column-img" src="/static/images/icon_right.png"></img>
         </a>

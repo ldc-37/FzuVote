@@ -2,6 +2,8 @@
 
 > a vote mp based on mpvue
 
+*注意：编译时需要使用开发者工具v1.02.1910120版本，否则创建问卷时会出现无法输入的情况*
+
 ## Build Setup
 
 ``` bash

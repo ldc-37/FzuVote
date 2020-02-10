@@ -1,10 +1,10 @@
 <!--
 功能：展示通用卡片
 参数：infoData: Object  卡片数据
-事件：无
+事件：longPress  长按卡片
 -->
 <template>
-  <div class="card" @click="navToVote">
+  <div class="card" @click="navToVote" @longpress="handleLongPress">
     <div class="body">
       <img :src="infoData.imgSrc" class="main-pic" mode="center">
       <img src="/static/images/shape1.png" mode="center" class="creator-bg">
@@ -28,8 +28,12 @@
 </template>
 
 <script>
+const EVENT_LONG_PRESS = 'longPress'
 export default {
-  props: ['infoData'],
+  props: {
+    infoData: Object,
+    // longPressFunc: Function
+  },
   data() {
     return {
       // 切勿使用展开运算符，否则{{}}中不再是响应式的属性，无法同步props的变更
@@ -57,6 +61,11 @@ export default {
       wx.navigateTo({
         url: url + '?id=' + this.id
       })
+    },
+    handleLongPress() {
+      console.warn(111);
+
+      this.$emit(EVENT_LONG_PRESS, this.infoData)
     }
   }
 }

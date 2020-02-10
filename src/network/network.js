@@ -298,7 +298,11 @@ const network = {
     }
     return res.ErrorCode
   },
-
+  //////// 删除投票
+  async deleteVote(type, id) {
+    const res = await fly.delete(`/${type}?id=${id}&session_id=${SessionId()}`)
+    return res.ErrorCode
+  },
 
   // 用户信息
   async getUserStat(sid) {
@@ -313,9 +317,23 @@ const network = {
     }
     return res.ErrorCode
   },
-  async getUserActivity(sid, type) {
+  async getUserActivity(type) {
     // 等待后端完善
-    const res = await fly.get(`/user/joined_record?session_id=${SessionId()}`)
+    let res
+    switch (type) {
+      case 'joined':
+        res = await fly.get(`/user/joined_record?session_id=${SessionId()}`)
+        break
+      case 'built':
+        res = await fly.get(`/user/built_record?session_id=${SessionId()}`)
+        break
+      case 'win': // invalid
+        res = await fly.get(`/user/joined_record?session_id=${SessionId()}`)
+        break
+      case 'history': // invalid
+        res = await fly.get(`/user/joined_record?session_id=${SessionId()}`)
+        break
+    }
     if (!res.ErrorCode) {
       const data = []
       for (let item of res.Data) {
