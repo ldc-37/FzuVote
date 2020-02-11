@@ -57,7 +57,8 @@
     <radio-group @change="changeRatio">
       <card :data="item" :voting="isVoting" v-for="(item, index) in showingVoteData" :key="index"></card>
     </radio-group>
-    <div class="empty-result">没有找到结果 T_T</div>
+    <div class="empty-result" v-if="voteData.length === 0">发起者忘记添加投票对象了Orz</div>
+    <div class="empty-result" v-else-if="showingVoteData.length === 0">没有找到结果 T_T</div>
 
     <div class="btn-area">
       <button class="btn" hover-class="btn-hover" :disabled="nowSelectId < 0 || !isVoting" :loading="btnLoading" @click="vote">投票</button>
@@ -123,7 +124,7 @@ export default {
       }
       const ret = []
       this.voteData.forEach((item) => {
-        if (item.title.indexOf(this.searchWord) !== -1) {
+        if (item.name.indexOf(this.searchWord) !== -1) {
           ret.push(item)
         } else if (item.id.toString() === this.searchWord) {
           // id匹配的放到前面
@@ -176,7 +177,7 @@ export default {
       this.statistic = data.statistic
       this.voteInfo = data.voteInfo
       this.voteData = data.voteData
-
+      this.showingVoteData = this.voteData
       mpvue.setNavigationBarTitle({
         title: this.voteInfo.title
       })
